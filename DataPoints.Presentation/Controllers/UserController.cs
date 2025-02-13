@@ -1,4 +1,5 @@
-﻿using DataPoints.Contract.Controller.Responses.Users;
+﻿using DataPoints.Application.Members.Queries.User.GetById;
+using DataPoints.Contract.Controller.Responses.Users;
 using DataPoints.Presentation.Controllers.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +14,9 @@ public class UserController : ApiController
     {
     }
 
-    [HttpGet]
-    public async Task<ActionResult<UserGetResponse>> GetUsersAsync()
+    [HttpGet("{id:Guid}")]
+    public async Task<ActionResult<UserGetResponse>> GetUsersAsync(Guid id)
     {
-        return Ok(new UserGetResponse());
+        return Ok(await Sender.Send(new UserGetByIdQuery(id)));
     }
 }

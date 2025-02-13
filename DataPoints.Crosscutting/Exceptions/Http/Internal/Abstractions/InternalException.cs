@@ -1,18 +1,10 @@
 ﻿using System.Net;
-using DataPoints.Crosscutting.Exceptions.Http.Abstractions;
+using DataPoints.Domain.Errors.Exceptions;
 
 namespace DataPoints.Crosscutting.Exceptions.Http.Internal.Abstractions;
 
-public abstract class InternalException : Exception, IHttpResponseException
+public abstract class InternalException : TreatableException
 {
-    public HttpStatusCode StatusCode => HttpStatusCode.NotFound;
-    public string? Code => nameof(StatusCode);
+    public override HttpStatusCode StatusCode => HttpStatusCode.InternalServerError;
 
-    protected InternalException()
-    {
-    }
-
-    protected InternalException(string? message) : base(message)
-    {
-    }
 }

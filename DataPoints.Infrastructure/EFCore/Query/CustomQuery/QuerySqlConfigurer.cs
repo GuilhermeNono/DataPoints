@@ -98,7 +98,7 @@ public abstract class QuerySqlConfigurer<TResult> : QuerySqlPropertyConfigurer<T
             return;
 
         if (_disregardExternalOrder)
-            throw new ExternalOrderWithInternalPagination();
+            throw new ExternalOrderWithTreatablePagination();
 
         Add($"  Offset {Pagination?.Size ?? 10} * ({Pagination?.Page} - 1) ");
         Add($"  Rows Fetch Next {Pagination?.Size} Rows Only");

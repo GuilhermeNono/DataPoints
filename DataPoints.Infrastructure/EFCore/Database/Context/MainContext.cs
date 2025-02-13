@@ -74,14 +74,24 @@ public sealed class MainContext(DbContextOptions<MainContext> options, ILogger<M
         }
     }
 
-    private IEnumerable<Type> ChildrenOfBaseEntity => AssemblyReference
-        .Assembly.GetTypes()
-        .Where(t => t.GetInterfaces()
-            .Any(it => it.IsGenericType && (it.GetGenericTypeDefinition() == typeof(Entity<>))))
-        .Where(t => t.Name.Contains("Entity"))
+    private IEnumerable<Type> ChildrenOfBaseEntity => AssemblyReference.Assembly.GetTypes()
+        .Where(t => t.IsClass && !t.IsAbstract)
+        .Where(InheritsFromEntity)
         .Where(t => t.GetInterface(nameof(IEntityLog)) is null)
         .Where(t => t.GetInterface(nameof(IEntityView)) is null)
-        .Where(t => !t.IsAbstract);
+        .ToList();
+
+    static bool InheritsFromEntity(Type type)
+    {
+        while (type != null && type != typeof(object))
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Entity<>))
+                return true;
+
+            type = type.BaseType;
+        }
+        return false;
+    }
 
     private IEnumerable<Type> ChildrenOfBaseEntityView => AssemblyReference
         .Assembly.GetTypes()

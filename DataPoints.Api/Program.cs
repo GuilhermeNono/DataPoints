@@ -1,17 +1,32 @@
+using DataPoints.Api.Extensions;
+using DataPoints.Api.Middlewares;
 using DataPoints.Application;
 using DataPoints.Infrastructure;
 using DataPoints.Infrastructure.DbUp;
 using DataPoints.Presentation.Controllers.Abstractions;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers()
+builder.Services.AddControllers(opt =>
+    {
+        opt.Filters.Add<ExceptionHandler>();
+    })
     .AddApplicationPart(typeof(ApiController).Assembly);
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.ConfigureServices();
+
+#region || Serilog Configuration ||
+
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
+
+#endregion
 
 #region || MediatR ||
 
@@ -45,6 +60,7 @@ app.RunFunctionsDbUp(builder.Configuration)
 
 #endregion
 
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

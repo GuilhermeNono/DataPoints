@@ -65,10 +65,24 @@ public sealed class AuditContext(DbContextOptions<AuditContext> options, ILogger
         }
     }
 
-    private static IEnumerable<Type> ChildrenOfBaseEntity => Domain.AssemblyReference
-        .Assembly.GetTypes()
-        .Where(t => t.BaseType != null)
-        .Where(t => t.Name.Contains("LogEntity"));
+    private static IEnumerable<Type> ChildrenOfBaseEntity => Domain.AssemblyReference.Assembly.GetTypes()
+        .Where(t => t.IsClass && !t.IsAbstract)
+        .Where(InheritsFromEntity)
+        .Where(t => t.GetInterface(nameof(IEntityLog)) is not null)
+        .Where(t => t.GetInterface(nameof(IEntityView)) is null)
+        .ToList();
+
+    static bool InheritsFromEntity(Type type)
+    {
+        while (type != null && type != typeof(object))
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEntityLog))
+                return true;
+
+            type = type.BaseType;
+        }
+        return false;
+    }
 
     private static IEnumerable<Type> ChildrenOfBaseEntityView => Domain.AssemblyReference
         .Assembly.GetTypes()
