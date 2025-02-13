@@ -12,8 +12,8 @@ namespace DataPoints.Infrastructure.DbUp;
 
 public static class DbUpExtension
 {
-    private const string ServerConnectionName = "SqlServerConnection";
-    private const string AuditServerConnectionName = "SqlAuditServerConnection";
+    private const string ServerConnectionName = "MainDatabase";
+    private const string AuditServerConnectionName = "AuditDatabase";
     private static readonly IReadOnlyList<string> ServerConnections = [ServerConnectionName, AuditServerConnectionName];
 
     public static IApplicationBuilder RunFunctionsDbUp(this IApplicationBuilder application,

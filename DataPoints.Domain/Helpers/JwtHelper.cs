@@ -11,7 +11,7 @@ public static class JwtHelper
         .Select(claim => claim.Value).First();
 
     private static string GetLastNameFromClaims(IEnumerable<Claim> claims) => claims
-        .Where(claim => claim.Type == nameof(ClaimTypeEnum.LastName))
+        .Where(claim => claim.Type == nameof(ClaimType.LastName))
         .Select(claim => claim.Value).FirstOrDefault(string.Empty);
     
     private static IEnumerable<string> GetFirstRolesFromClaims(IEnumerable<Claim> claims) => claims
@@ -20,7 +20,7 @@ public static class JwtHelper
     
     private static long GetLoggedPersonId(IEnumerable<Claim> claims)
     {
-        return claims.Where(claim => claim.Type == ClaimTypeEnum.Id.ToString())
+        return claims.Where(claim => claim.Type == ClaimType.Id.ToString())
             .Select(claim => Convert.ToInt64(claim.Value)).FirstOrDefault();
     }
 
@@ -42,7 +42,7 @@ public static class JwtHelper
     
     public static LoggedPerson CreateAuthenticatedPerson(ClaimsPrincipal user)
     {
-        if (user.Identity?.IsAuthenticated is false)
+        if (user?.Identity?.IsAuthenticated is false)
             return LoggedPerson.Anonymous();
         
         return new LoggedPerson

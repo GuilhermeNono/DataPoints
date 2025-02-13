@@ -37,7 +37,7 @@ public abstract class CrudRepository<TEntity, TId>
     {
         Model.Update(entity);
 
-        UpdateAuditOfEntity(entity, OperationEnum.U);
+        UpdateAuditOfEntity(entity, InternalOperation.U);
 
         await Context.SaveChangesAsync(cancellationToken);
 
@@ -51,7 +51,7 @@ public abstract class CrudRepository<TEntity, TId>
     {
         Model.Update(entity);
 
-        UpdateAuditOfEntity(entity, OperationEnum.U, userWhoUpdated);
+        UpdateAuditOfEntity(entity, InternalOperation.U, userWhoUpdated);
 
         await Context.SaveChangesAsync(cancellationToken);
 
@@ -67,7 +67,7 @@ public abstract class CrudRepository<TEntity, TId>
         Model.UpdateRange(entities);
         
         foreach (var entity in entities)
-            UpdateAuditOfEntity(entity, OperationEnum.U, userWhoUpdated);
+            UpdateAuditOfEntity(entity, InternalOperation.U, userWhoUpdated);
 
         await Context.SaveChangesAsync(cancellationToken);
 
@@ -80,7 +80,7 @@ public abstract class CrudRepository<TEntity, TId>
     {
         await Model.AddAsync(entity, cancellationToken);
 
-        UpdateAuditOfEntity(entity, OperationEnum.C);
+        UpdateAuditOfEntity(entity, InternalOperation.C);
 
         await Context.SaveChangesAsync(cancellationToken);
         Context.ChangeTracker.Clear();
@@ -91,14 +91,14 @@ public abstract class CrudRepository<TEntity, TId>
     {
         await Model.AddAsync(entity, cancellationToken);
 
-        UpdateAuditOfEntity(entity, OperationEnum.C, userWhoAdded);
+        UpdateAuditOfEntity(entity, InternalOperation.C, userWhoAdded);
 
         await Context.SaveChangesAsync(cancellationToken);
         Context.ChangeTracker.Clear();
         return entity;
     }
 
-    protected static void UpdateAuditOfEntity(TEntity entity, OperationEnum operation,
+    protected static void UpdateAuditOfEntity(TEntity entity, InternalOperation internalOperation,
         string userWhoUpdate = UserHelper.System)
     {
         if (entity is not IAudit audit) return;
@@ -106,12 +106,12 @@ public abstract class CrudRepository<TEntity, TId>
         if (string.IsNullOrEmpty(userWhoUpdate))
             userWhoUpdate = UserHelper.System;
 
-        audit.AuditDate = DateTime.Now;
-        audit.AuditUser = userWhoUpdate;
-        audit.OperationEnum = operation;
+        audit.LastChangeAt = DateTime.Now;
+        audit.LastChangeBy = userWhoUpdate;
+        audit.InternalOperation = internalOperation;
     }
 
-    private static void UpdateAuditOfEntity(IEnumerable<TEntity> entities, OperationEnum operation,
+    private static void UpdateAuditOfEntity(IEnumerable<TEntity> entities, InternalOperation internalOperation,
         string? userWhoUpdate = UserHelper.System)
     {
         foreach (var entity in entities)
@@ -121,9 +121,9 @@ public abstract class CrudRepository<TEntity, TId>
             if (string.IsNullOrEmpty(userWhoUpdate))
                 userWhoUpdate = UserHelper.System;
 
-            audit.AuditDate = DateTime.Now;
-            audit.AuditUser = userWhoUpdate!;
-            audit.OperationEnum = operation;
+            audit.LastChangeAt = DateTime.Now;
+            audit.LastChangeBy = userWhoUpdate!;
+            audit.InternalOperation = internalOperation;
         }
     }
 }

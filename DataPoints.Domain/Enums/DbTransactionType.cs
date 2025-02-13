@@ -1,6 +1,6 @@
 ﻿namespace DataPoints.Domain.Enums;
 
-public enum DbTransactionTypeEnum
+public enum DbTransactionType
 {
     NoTransaction = 0,
     ReadCommit = 1,

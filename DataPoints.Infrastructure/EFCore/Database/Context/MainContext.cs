@@ -2,8 +2,10 @@
 using DataPoints.Domain;
 using DataPoints.Domain.Annotations;
 using DataPoints.Domain.Database.Context;
+using DataPoints.Domain.Database.Entity;
 using DataPoints.Domain.Database.Entity.Interfaces;
 using DataPoints.Domain.Enums;
+using DataPoints.Domain.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -14,7 +16,7 @@ public sealed class MainContext(DbContextOptions<MainContext> options, ILogger<M
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") is not "Production")
+        if(!EnvironmentHelper.IsProductionEnvironment)
             optionsBuilder.EnableSensitiveDataLogging();
         base.OnConfiguring(optionsBuilder);
     }
@@ -75,14 +77,14 @@ public sealed class MainContext(DbContextOptions<MainContext> options, ILogger<M
     private IEnumerable<Type> ChildrenOfBaseEntity => AssemblyReference
         .Assembly.GetTypes()
         .Where(t => t.GetInterfaces()
-            .Any(it => it.IsGenericType && (it.GetGenericTypeDefinition() == typeof(IEntity<>))))
+            .Any(it => it.IsGenericType && (it.GetGenericTypeDefinition() == typeof(Entity<>))))
         .Where(t => t.Name.Contains("Entity"))
-        .Where(t => !t.Name.Contains("Log"))
-        .Where(t => !t.Name.Contains("View"))
+        .Where(t => t.GetInterface(nameof(IEntityLog)) is null)
+        .Where(t => t.GetInterface(nameof(IEntityView)) is null)
         .Where(t => !t.IsAbstract);
 
     private IEnumerable<Type> ChildrenOfBaseEntityView => AssemblyReference
         .Assembly.GetTypes()
         .Where(t => t.GetInterface(nameof(IEntityView)) is not null)
-        .Where(t => !t.Name.Contains("Log"));
+        .Where(t => t.GetInterface(nameof(IEntityLog)) is null);
 }

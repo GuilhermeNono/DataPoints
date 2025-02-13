@@ -16,7 +16,7 @@ public class TransactionService(
     private readonly Stack<int> _actionHashLayers = [];
     private int? _hashCodeToFinishTransaction;
 
-    public async Task ExecuteInTransactionContextAsync(Func<Task> action, DbTransactionTypeEnum transactionType,
+    public async Task ExecuteInTransactionContextAsync(Func<Task> action, DbTransactionType transactionType,
         TransactionLogLevel logLevel, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -60,13 +60,13 @@ public class TransactionService(
             logger.LogInformation("{Message}", message);
     }
 
-    private async Task BeginTransaction(DbTransactionTypeEnum transactionType, CancellationToken cancellationToken)
+    private async Task BeginTransaction(DbTransactionType transactionType, CancellationToken cancellationToken)
     {
         await ComputeDbTransaction(mainContext, transactionType, cancellationToken);
         await ComputeDbTransaction(auditContext, transactionType, cancellationToken);
     }
 
-    private async Task ComputeDbTransaction(IDatabaseContext context, DbTransactionTypeEnum transactionType, CancellationToken cancellationToken)
+    private async Task ComputeDbTransaction(IDatabaseContext context, DbTransactionType transactionType, CancellationToken cancellationToken)
     {
         if (!HashKeyExistInTransactionList(context.GetHashCode()))
         {

@@ -2,7 +2,7 @@
 
 namespace DataPoints.Domain.Enums;
 
-public enum OperationEnum
+public enum InternalOperation
 {
     [Description("Create")]
     C,

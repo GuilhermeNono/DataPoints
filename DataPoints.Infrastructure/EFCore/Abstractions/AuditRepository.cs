@@ -16,7 +16,7 @@ public abstract class AuditRepository<TEntity, TId>(AuditContext context)
     {
         await Model.AddAsync(entity, cancellationToken);
 
-        UpdateAuditOfEntity(entity, OperationEnum.D);
+        UpdateAuditOfEntity(entity, InternalOperation.D);
         
         return await Context.SaveChangesAsync(cancellationToken);
     }
@@ -33,7 +33,7 @@ public abstract class AuditRepository<TEntity, TId>(AuditContext context)
     {
         await Model.AddAsync(entity, cancellationToken);
 
-        UpdateAuditOfEntity(entity, OperationEnum.D, userWhoDeleted);
+        UpdateAuditOfEntity(entity, InternalOperation.D, userWhoDeleted);
         
         return await Context.SaveChangesAsync(cancellationToken);
     }
@@ -42,7 +42,7 @@ public abstract class AuditRepository<TEntity, TId>(AuditContext context)
     {
         await Model.AddAsync(entity, cancellationToken);
         
-        UpdateAuditOfEntity(entity, OperationEnum.U);
+        UpdateAuditOfEntity(entity, InternalOperation.U);
         
         await Context.SaveChangesAsync(cancellationToken);
         return entity;
@@ -53,7 +53,7 @@ public abstract class AuditRepository<TEntity, TId>(AuditContext context)
         await Model.AddRangeAsync(entities, cancellationToken);
 
         foreach (var entity in entities)
-            UpdateAuditOfEntity(entity, OperationEnum.U);
+            UpdateAuditOfEntity(entity, InternalOperation.U);
         
         await Context.SaveChangesAsync(cancellationToken);
         
@@ -64,7 +64,7 @@ public abstract class AuditRepository<TEntity, TId>(AuditContext context)
     {
         await Model.AddAsync(entity, cancellationToken);
         
-        UpdateAuditOfEntity(entity, OperationEnum.U, userWhoUpdated);
+        UpdateAuditOfEntity(entity, InternalOperation.U, userWhoUpdated);
         
         await Context.SaveChangesAsync(cancellationToken);
         
@@ -75,7 +75,7 @@ public abstract class AuditRepository<TEntity, TId>(AuditContext context)
     {
         await Model.AddAsync(entity, cancellationToken);
 
-        UpdateAuditOfEntity(entity, OperationEnum.C);
+        UpdateAuditOfEntity(entity, InternalOperation.C);
         
         await Context.SaveChangesAsync(cancellationToken);
 
@@ -86,7 +86,7 @@ public abstract class AuditRepository<TEntity, TId>(AuditContext context)
     {
         await Model.AddAsync(entity, cancellationToken);
 
-        UpdateAuditOfEntity(entity, OperationEnum.C, userWhoAdded);
+        UpdateAuditOfEntity(entity, InternalOperation.C, userWhoAdded);
         
         await Context.SaveChangesAsync(cancellationToken);
 

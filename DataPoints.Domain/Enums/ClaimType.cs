@@ -1,6 +1,6 @@
 ﻿namespace DataPoints.Domain.Enums;
 
-public enum ClaimTypeEnum
+public enum ClaimType
 {
     Id,
     LastName

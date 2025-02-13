@@ -17,8 +17,7 @@ public abstract class ApiController : ControllerBase, IController
     {
         Sender = sender;
         Logger = logger;
-        LoggedPerson = JwtHelper.CreateAuthenticatedPerson(User);
-    }
+    } 
 
     public LoggedPerson LoggedPerson { get; set; } 
 }

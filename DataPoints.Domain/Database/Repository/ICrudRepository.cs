@@ -2,7 +2,7 @@
 
 namespace DataPoints.Domain.Database.Repository;
 
-public interface ICrudRepository<TEntity, TId> : IReadRepository<TEntity, TId> 
+public interface ICrudRepository<TEntity, in TId> : IReadRepository<TEntity, TId> 
     where TEntity : class, IEntity<TId>, new()
 {
     Task<int> Delete(TEntity entity, CancellationToken cancellationToken);

@@ -16,6 +16,6 @@ public class UserController : ApiController
     [HttpGet]
     public async Task<ActionResult<UserGetResponse>> GetUsersAsync()
     {
-        throw new NotImplementedException();
+        return Ok(new UserGetResponse());
     }
 }

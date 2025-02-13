@@ -5,7 +5,7 @@ namespace DataPoints.Domain.Database.Transaction;
 public interface ITransactionService
 {
     Task ExecuteInTransactionContextAsync(Func<Task> action,
-        DbTransactionTypeEnum dbTransactionType = DbTransactionTypeEnum.ReadUncommitted,
+        DbTransactionType dbTransactionType = DbTransactionType.ReadUncommitted,
         TransactionLogLevel logLevel = TransactionLogLevel.Explicit,
         CancellationToken cancellationToken = default);
 }

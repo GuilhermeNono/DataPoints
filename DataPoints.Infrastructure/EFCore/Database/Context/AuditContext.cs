@@ -73,5 +73,5 @@ public sealed class AuditContext(DbContextOptions<AuditContext> options, ILogger
     private static IEnumerable<Type> ChildrenOfBaseEntityView => Domain.AssemblyReference
         .Assembly.GetTypes()
         .Where(t => t.GetInterface(nameof(IEntityView)) is not null)
-        .Where(t => t.Name.Contains("Log"));
+        .Where(t => t.GetInterface(nameof(IEntityLog)) is not null);
 }

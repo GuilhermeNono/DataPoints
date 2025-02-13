@@ -5,18 +5,16 @@ using DataPoints.Domain.Helpers;
 
 namespace DataPoints.Domain.Database.Entity;
 
-public abstract class AuditableEntity<TId> : IEntity<TId>, IAudit
+public abstract class AuditableEntity<TId> : Entity<TId>, IAudit
 {
-    public TId? Id { get; init; }
-
     public string Operation { get; protected set; } = OperationHelper.Create;
     
     [NotMapped]
-    public OperationEnum OperationEnum
+    public InternalOperation InternalOperation
     {
-        get => Enum.Parse<OperationEnum>(Operation, true);
+        get => Enum.Parse<InternalOperation>(Operation, true);
         set => Operation = value.ToString();
     }
-    public string AuditUser { get; set; } = UserHelper.System;
-    public DateTime AuditDate { get; set; }
+    public string LastChangeBy { get; set; } = UserHelper.System;
+    public DateTime LastChangeAt { get; set; }
 }

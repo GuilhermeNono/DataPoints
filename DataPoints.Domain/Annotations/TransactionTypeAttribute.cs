@@ -8,10 +8,10 @@ namespace DataPoints.Domain.Annotations;
 [AttributeUsage(AttributeTargets.Class)]
 public class TransactionTypeAttribute : Attribute
 {
-    public readonly DbTransactionTypeEnum TransactionTypeEnum;
+    public readonly DbTransactionType TransactionType;
 
-    public TransactionTypeAttribute(DbTransactionTypeEnum transactionTypeEnum = DbTransactionTypeEnum.ReadUncommitted)
+    public TransactionTypeAttribute(DbTransactionType transactionType = DbTransactionType.ReadUncommitted)
     {
-        TransactionTypeEnum = transactionTypeEnum;
+        TransactionType = transactionType;
     }
 }

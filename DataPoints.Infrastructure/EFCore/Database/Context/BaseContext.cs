@@ -31,7 +31,7 @@ public abstract class BaseContext<TContext>(DbContextOptions<TContext> options, 
         return CurrentTransaction ??= await Database.BeginTransactionAsync(IsolationLevel.ReadUncommitted, cancellationToken);
     }
 
-    public async Task<IDbContextTransaction> BeginTransactionAsync(DbTransactionTypeEnum transactionType, CancellationToken cancellationToken)
+    public async Task<IDbContextTransaction> BeginTransactionAsync(DbTransactionType transactionType, CancellationToken cancellationToken)
     {
         return CurrentTransaction ??= await Database.BeginTransactionAsync(SwitchTransactionType(transactionType), cancellationToken);
     }
@@ -83,23 +83,23 @@ public abstract class BaseContext<TContext>(DbContextOptions<TContext> options, 
         }
     }
 
-    private static IsolationLevel SwitchTransactionType(DbTransactionTypeEnum transactionType)
+    private static IsolationLevel SwitchTransactionType(DbTransactionType transactionType)
     {
         var result = IsolationLevel.ReadUncommitted;
 
         switch (transactionType)
         {
-            case DbTransactionTypeEnum.ReadCommit:
+            case DbTransactionType.ReadCommit:
             {
                 result = IsolationLevel.ReadCommitted;
                 break;
             }
-            case DbTransactionTypeEnum.ReadUncommitted:
+            case DbTransactionType.ReadUncommitted:
             {
                 result = IsolationLevel.ReadUncommitted;
                 break;
             }
-            case DbTransactionTypeEnum.NoTransaction:
+            case DbTransactionType.NoTransaction:
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(transactionType), transactionType, null);

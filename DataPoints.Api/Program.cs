@@ -1,5 +1,6 @@
 using DataPoints.Application;
 using DataPoints.Infrastructure;
+using DataPoints.Infrastructure.DbUp;
 using DataPoints.Presentation.Controllers.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,13 +13,20 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-#region | MediatR |
+#region || MediatR ||
 
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(AssemblyReference.Assembly));
 
 #endregion
 
-builder.Services.ConfigureDatabase(builder.Configuration);
+#region || Database ||
+
+builder.Services.ConfigureDatabase(builder.Configuration)
+    .AddMainRepositories()
+    .AddAuditRepositories();
+
+#endregion
+
 
 var app = builder.Build();
 
@@ -28,6 +36,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+#region || DbUp ||
+
+app.RunFunctionsDbUp(builder.Configuration)
+    .RunMainDbUp(builder.Configuration)
+    .RunAuditDbUp(builder.Configuration);
+
+#endregion
 
 app.UseHttpsRedirection();
 

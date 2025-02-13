@@ -19,7 +19,23 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="DbUp\Scripts\Functions\" />
+      <None Remove="DbUp\Scripts\Versions\script-1.0.0.sql" />
+      <EmbeddedResource Include="DbUp\Scripts\Versions\script-1.0.0.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="DbUp\Scripts\Audit\Versions\script-1.0.0.sql" />
+      <EmbeddedResource Include="DbUp\Scripts\Audit\Versions\script-1.0.0.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="DbUp\Scripts\Functions\Temp\proc-temp.txt" />
+      <EmbeddedResource Include="DbUp\Scripts\Functions\Temp\proc-temp.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="DbUp\Scripts\Audit\Versions\script-1.0.1.sql" />
+      <None Remove="DbUp\Scripts\Versions\script-1.0.1.sql" />
+      <EmbeddedResource Include="DbUp\Scripts\Versions\script-1.0.1.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

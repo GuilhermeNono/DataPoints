@@ -2,7 +2,7 @@
 
 namespace DataPoints.Domain.Database.Repository;
 
-public interface IAuditRepository<TEntity, TId> : ICrudRepository<TEntity, TId>
+public interface IAuditRepository<TEntity, in TId> : ICrudRepository<TEntity, TId>
     where TEntity : class, IEntity<TId>, new()
 {
     Task<int> Delete(TEntity entity, string userWhoDeleted, CancellationToken cancellationToken);
