@@ -14,8 +14,4 @@
       <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Exceptions\Http\Abstractions\" />
-    </ItemGroup>
-
 </Project>

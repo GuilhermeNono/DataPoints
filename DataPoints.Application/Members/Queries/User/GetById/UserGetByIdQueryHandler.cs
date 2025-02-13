@@ -17,7 +17,7 @@ public class UserGetByIdQueryHandler : IQueryHandler<UserGetByIdQuery, UserGetRe
     public async Task<UserGetResponse> Handle(UserGetByIdQuery request, CancellationToken cancellationToken)
     {
         var entity = await _userRepository.FindById(request.Id)
-                     ?? throw new UserNotFoundException();
+                     ?? throw new Exception();
 
         return new UserGetResponse
         {

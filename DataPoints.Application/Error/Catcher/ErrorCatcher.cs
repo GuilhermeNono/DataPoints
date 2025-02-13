@@ -20,7 +20,7 @@ public class ErrorCatcher : IErrorCatcher
                 StatusCode = (int)HttpStatusCode.InternalServerError,
                 Code = nameof(HttpStatusCode.InternalServerError),
                 Date = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-                Description = $"Treatable Exception: {nameof(HttpStatusCode.InternalServerError)}"
+                Description = $"Houve um problema interno, por favor tente mais tarde."
             }
         };
     }
