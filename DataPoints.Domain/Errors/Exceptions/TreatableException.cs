@@ -14,13 +14,13 @@ public abstract class TreatableException : Exception, ITreatableException
         .WriteTo.Console()
         .CreateLogger());
 
-    private Logger Logger => _logger.Value;
+    protected Logger Logger => _logger.Value;
 
-    public TreatableException()
+    protected TreatableException()
     {
     }
 
-    public TreatableException(string? message) : base(message)
+    protected TreatableException(string message) : base(message)
     {
     }
 

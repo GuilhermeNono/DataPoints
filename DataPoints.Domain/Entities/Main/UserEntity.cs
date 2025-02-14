@@ -9,5 +9,4 @@ public class UserEntity : AuditableEntity<Guid>
     public string Email { get; set; } = string.Empty;
     public bool IsEmailConfirmed { get; set; }
     public string PasswordHash { get; set; } = string.Empty;
-    public string Salt { get; set; } = string.Empty;
 }

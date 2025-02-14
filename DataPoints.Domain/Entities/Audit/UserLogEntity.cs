@@ -4,7 +4,7 @@ using DataPoints.Domain.Entities.Main;
 
 namespace DataPoints.Domain.Entities.Audit;
 
-[Table("Ath_User")]
+[Table("Ath_Users")]
 public class UserLogEntity : UserEntity, IEntityLog
 {
     public new long Id { get; init; }
@@ -20,6 +20,5 @@ public class UserLogEntity : UserEntity, IEntityLog
         Email = entity.Email;
         IsEmailConfirmed = entity.IsEmailConfirmed;
         PasswordHash = entity.PasswordHash;
-        Salt = entity.Salt;
     }
 }

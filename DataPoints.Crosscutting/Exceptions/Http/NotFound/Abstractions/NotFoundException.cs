@@ -3,15 +3,7 @@ using DataPoints.Domain.Errors.Exceptions;
 
 namespace DataPoints.Crosscutting.Exceptions.Http.NotFound.Abstractions;
 
-public abstract class NotFoundException : TreatableException
+public abstract class NotFoundException(string message) : TreatableException(message)
 {
     public override HttpStatusCode StatusCode => HttpStatusCode.NotFound;
-
-    protected NotFoundException()
-    {
-    }
-
-    protected NotFoundException(string? message) : base(message)
-    {
-    }
 }

@@ -1,14 +1,26 @@
-﻿using DataPoints.Domain.Database.Context;
+﻿using System.Text;
+using DataPoints.Crosscutting.Configurations;
+using DataPoints.Domain.Database.Context;
 using DataPoints.Domain.Database.Transaction;
+using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Repositories.Audit;
 using DataPoints.Domain.Repositories.Main;
 using DataPoints.Infrastructure.EFCore.Database.Context;
 using DataPoints.Infrastructure.EFCore.Database.Services;
 using DataPoints.Infrastructure.Persistence.Audit;
 using DataPoints.Infrastructure.Persistence.Main;
+using DataPoints.Infrastructure.Persistence.Main.Permission;
+using DataPoints.Infrastructure.Persistence.Main.Person;
+using DataPoints.Infrastructure.Persistence.Main.Profile;
+using DataPoints.Infrastructure.Persistence.Main.Token.Refresh;
+using DataPoints.Infrastructure.Persistence.Main.User;
+using DataPoints.Infrastructure.Persistence.Main.Wallet;
+using DataPoints.Infrastructure.Persistence.Main.Wallet.Transaction;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DataPoints.Infrastructure;
 
@@ -16,6 +28,8 @@ public static class ServiceExtensions
 {
     private const string MainConnectionName = "MainDatabase";
     private const string AuditConnectionName = "AuditDatabase";
+
+    #region || Database ||
 
     public static IServiceCollection ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
     {
@@ -37,23 +51,52 @@ public static class ServiceExtensions
     public static IServiceCollection AddMainRepositories(this IServiceCollection services)
     {
         services.AddScoped<IPermissionRepository, PermissionRepository>();
-        services.AddScoped<IPersonRepository , PersonRepository>();
+        services.AddScoped<IPersonRepository, PersonRepository>();
         services.AddScoped<IProfileRepository, ProfileRepository>();
-        services.AddScoped<IUserRepository , UserRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IWalletRepository, WalletRepository>();
         services.AddScoped<IWalletTransactionRepository, WalletTransactionRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         return services;
-    }    
-    
+    }
+
     public static IServiceCollection AddAuditRepositories(this IServiceCollection services)
     {
         services.AddScoped<IPermissionLogRepository, PermissionLogRepository>();
-        services.AddScoped<IPersonLogRepository , PersonLogRepository>();
+        services.AddScoped<IPersonLogRepository, PersonLogRepository>();
         services.AddScoped<IProfileLogRepository, ProfileLogRepository>();
-        services.AddScoped<IUserLogRepository , UserLogRepository>();
+        services.AddScoped<IUserLogRepository, UserLogRepository>();
         services.AddScoped<IWalletLogRepository, WalletLogRepository>();
 
         return services;
     }
+
+    #endregion
+
+    #region || Identity ||
+
+    public static void AddIdentity(this IServiceCollection services)
+    {
+        var jwtConfiguration = services.BuildServiceProvider().GetRequiredService<IJwtConfiguration>();
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtConfiguration.Issuer,
+                    ValidAudience = jwtConfiguration.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey))
+                };
+            });
+
+        services.AddAuthorization();
+    }
+
+    #endregion
 }

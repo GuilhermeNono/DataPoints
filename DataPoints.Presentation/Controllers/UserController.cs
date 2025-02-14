@@ -1,5 +1,5 @@
 ﻿using DataPoints.Application.Members.Queries.User.GetById;
-using DataPoints.Contract.Controller.Responses.Users;
+using DataPoints.Contract.Controller.Users.Responses;
 using DataPoints.Presentation.Controllers.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

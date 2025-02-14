@@ -23,5 +23,9 @@ public static class ErrorMessage
             $"Não foi possível deletar, pois não há registro em {entity} com este Id";
         
         public static string MigrationFailed() => "Houve uma falha ao executar a migração do banco de dados.";
+
+        public static string UserNotFound(Guid id) => $"Não foi possivel encontrar um usuario com o Id {id}";
+
+        public static string LoginNotFound() => "Credenciais inexistentes ou inválidas.";
     }
 }

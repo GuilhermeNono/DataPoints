@@ -8,6 +8,8 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.RegisterConfiguration(builder.Configuration);
+
 builder.Services.AddControllers(opt =>
     {
         opt.Filters.Add<ExceptionHandler>();
@@ -42,6 +44,11 @@ builder.Services.ConfigureDatabase(builder.Configuration)
 
 #endregion
 
+#region || Identity ||
+
+builder.Services.AddIdentity();
+
+#endregion
 
 var app = builder.Build();
 
@@ -57,6 +64,13 @@ if (app.Environment.IsDevelopment())
 app.RunFunctionsDbUp(builder.Configuration)
     .RunMainDbUp(builder.Configuration)
     .RunAuditDbUp(builder.Configuration);
+
+#endregion
+
+#region || Identity ||
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 #endregion
 

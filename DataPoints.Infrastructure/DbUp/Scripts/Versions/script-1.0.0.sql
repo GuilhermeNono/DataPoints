@@ -110,3 +110,19 @@ CREATE TABLE Prm_Profiles
     LastChangeAt Datetime         not null,
     LastChangeBy Varchar(255)     not null
 )
+
+go
+
+CREATE TABLE Ath_RefreshTokens
+(
+    Id           bigint           not null
+        constraint PK_RefreshToken primary key
+        identity,
+    Token        varchar(80)      not null,
+    IdUser       uniqueidentifier not null
+        constraint FK_RefreshToken_User references Ath_Users,
+    DateExpired  DATETIME         NOT NULL,
+    Operation    char(1)          not null,
+    LastChangeAt Datetime         not null,
+    LastChangeBy Varchar(255)     not null
+)

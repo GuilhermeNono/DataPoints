@@ -5,4 +5,5 @@ namespace DataPoints.Domain.Repositories.Main;
 
 public interface IUserRepository : ICrudRepository<UserEntity, Guid>
 {
+    Task<UserEntity?> FindByLogin(string login);
 }

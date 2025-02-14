@@ -1,4 +1,6 @@
 ﻿using DataPoints.Crosscutting.Exceptions.Http.NotFound;
+using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity;
+using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Entity;
 using DataPoints.Domain.Database.Entity.Interfaces;
 using DataPoints.Domain.Database.Repository;
 using DataPoints.Domain.Enums;

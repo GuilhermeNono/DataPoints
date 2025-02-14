@@ -7,17 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
       <PackageReference Include="MediatR" Version="12.4.1" />
+      <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.4.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\DataPoints.Contract\DataPoints.Contract.csproj" />
       <ProjectReference Include="..\DataPoints.Crosscutting\DataPoints.Crosscutting.csproj" />
       <ProjectReference Include="..\DataPoints.Domain\DataPoints.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Members\Commands\" />
     </ItemGroup>
 
 </Project>
