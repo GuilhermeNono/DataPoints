@@ -3,6 +3,7 @@ using DataPoints.Crosscutting.Configurations;
 using DataPoints.Domain.Database.Context;
 using DataPoints.Domain.Database.Transaction;
 using DataPoints.Domain.Entities.Main;
+using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Repositories.Audit;
 using DataPoints.Domain.Repositories.Main;
 using DataPoints.Infrastructure.EFCore.Database.Context;
@@ -17,6 +18,7 @@ using DataPoints.Infrastructure.Persistence.Main.User;
 using DataPoints.Infrastructure.Persistence.Main.Wallet;
 using DataPoints.Infrastructure.Persistence.Main.Wallet.Transaction;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,7 +78,7 @@ public static class ServiceExtensions
 
     #region || Identity ||
 
-    public static void AddIdentity(this IServiceCollection services)
+    public static void ConfigureIdentity(this IServiceCollection services)
     {
         var jwtConfiguration = services.BuildServiceProvider().GetRequiredService<IJwtConfiguration>();
 
@@ -94,7 +96,27 @@ public static class ServiceExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey))
                 };
             });
-
+        
+        services.AddAuthorizationBuilder()
+            .AddPolicy(RoleHelper.Administrator, policy => { policy.RequireRole(RoleHelper.Administrator); })
+            .AddPolicy(RoleHelper.User, policy => { policy.RequireRole(RoleHelper.User); });
+        
+        services.Configure<DataProtectionTokenProviderOptions>(opt =>
+            opt.TokenLifespan = TimeSpan.FromMinutes(1));
+        
+        services.AddIdentity<UserEntity, ProfileEntity>(o =>
+            {
+                o.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
+                o.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+            })
+            .AddUserStore<UserRepository>()
+            .AddDefaultTokenProviders()
+            .AddRoleStore<ProfileRepository>()
+            .AddSignInManager<SignInManager<UserEntity>>();
+        
+        services.AddScoped<UserManager<UserEntity>>();
+        
+        services.AddHttpContextAccessor();
         services.AddAuthorization();
     }
 

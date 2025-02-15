@@ -5,8 +5,10 @@
     IdUser           uniqueidentifier not null,
     Email            varchar(120)     not null,
     IsEmailConfirmed bit              not null,
+    NormalizedEmail  varchar(120)     not null,
+    SecurityStamp    varchar(120)     not null,
     PasswordHash     varchar(258)     not null,
-    Salt             varchar(125)     not null,
+    IsActive         bit              not null,
     Operation        char(1)          not null,
     LastChangeAt     Datetime         not null,
     LastChangeBy     Varchar(255)     not null
@@ -19,20 +21,22 @@ go
 
 CREATE TABLE Ppl_People
 (
-    Id             bigint           not null
+    Id                       bigint           not null
         constraint PK_Person primary key identity,
-    IdPerson       uniqueidentifier not null,
-    FirstName      varchar(125)     not null,
-    LastName       varchar(125)     not null,
-    Avatar         varchar(800)     not null,
-    BirthDate      DateTime         not null,
-    IsActive       Bit              not null,
-    DocumentNumber varchar(80)      not null,
-    DocumentType   int              not null,
-    DateInclusion  Datetime         not null,
-    Operation      char(1)          not null,
-    LastChangeAt   Datetime         not null,
-    LastChangeBy   Varchar(255)     not null
+    IdPerson                 uniqueidentifier not null,
+    FirstName                varchar(125)     not null,
+    LastName                 varchar(125)     not null,
+    Avatar                   varchar(800)     not null,
+    BirthDate                DateTime         not null,
+    IsActive                 Bit              not null,
+    DocumentNumber           varchar(80)      not null,
+    NormalizedDocumentNumber varchar(80)      not null,
+    DocumentType             int              not null,
+    PersonType               int              not null,
+    DateInclusion            Datetime         not null,
+    Operation                char(1)          not null,
+    LastChangeAt             Datetime         not null,
+    LastChangeBy             Varchar(255)     not null
 )
 go
 
@@ -81,9 +85,9 @@ go
 
 CREATE TABLE Prm_Profiles
 (
-    Id           bigint       not null
+    Id           bigint           not null
         constraint PK_Profile primary key identity,
-    IdProfile           bigint           not null,
+    IdProfile    bigint           not null,
     IdUser       uniqueidentifier not null,
     IdPermission int              not null,
     Operation    char(1)          not null,

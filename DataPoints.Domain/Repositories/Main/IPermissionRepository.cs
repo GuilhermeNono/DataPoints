@@ -5,4 +5,5 @@ namespace DataPoints.Domain.Repositories.Main;
 
 public interface IPermissionRepository : ICrudRepository<PermissionEntity, int>
 {
+    Task<PermissionEntity?> FindByName(string role);
 }

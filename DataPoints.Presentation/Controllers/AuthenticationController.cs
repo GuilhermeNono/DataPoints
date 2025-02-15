@@ -1,6 +1,9 @@
 using DataPoints.Application.Members.Commands.Authentication.SignIn;
+using DataPoints.Application.Members.Commands.Authentication.SignUp;
 using DataPoints.Contract.Controller.Authentication.SignIn.Requests;
 using DataPoints.Contract.Controller.Authentication.SignIn.Responses;
+using DataPoints.Contract.Controller.Authentication.SignUp.Requests;
+using DataPoints.Contract.Controller.Authentication.SignUp.Responses;
 using DataPoints.Domain.Interfaces;
 using DataPoints.Presentation.Controllers.Abstractions;
 using MediatR;
@@ -21,6 +24,15 @@ public class AuthenticationController : ApiController
     [HttpPost("signin")]
     public async Task<ActionResult<SignInResponse>> SignInAsync([FromBody] SignInRequest user)
     {
-        return Ok(await Sender.Send(new SignInCommand(user.Email, user.Password, LoggedPerson)));
+        return Ok(await Sender.Send(SignInCommand.ToCommand(user, LoggedPerson)));
+    }
+    
+    [AllowAnonymous]
+    [HttpPost("signup")]
+    public async Task<ActionResult<SignUpResponse>> SignUpAsync([FromBody] SignUpRequest user)
+    {
+        var result = await Sender.Send(SignUpCommand.ToCommand(user, LoggedPerson));
+        
+        return Created("v1/auth/signin", result);
     }
 }

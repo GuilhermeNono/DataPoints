@@ -1,9 +1,9 @@
 using DataPoints.Domain.Entities.Main;
 using DataPoints.Infrastructure.EFCore.Query.CustomQuery;
 
-namespace DataPoints.Infrastructure.Persistence.Main.User.Queries.FindByLogin;
+namespace DataPoints.Infrastructure.Persistence.Main.User.Queries.FindByEmail;
 
-public class FindByLoginQuery(FindByLoginFilter filter) : CustomQuery<FindByLoginFilter, UserEntity>(filter)
+public class FindByEmailQuery(FindByEmailFilter filter) : CustomQuery<FindByEmailFilter, UserEntity>(filter)
 {
     protected override void Prepare()
     {

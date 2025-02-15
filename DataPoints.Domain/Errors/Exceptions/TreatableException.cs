@@ -1,5 +1,6 @@
 using System.Net;
 using DataPoints.Domain.Errors.Abstractions;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Core;
 
@@ -26,7 +27,8 @@ public abstract class TreatableException : Exception, ITreatableException
 
     public virtual IEnumerable<Error> ThrowHandledException()
     {
-        Logger.Error("Not treatable exception!");
+
+        Logger.Error(this, Message);
         return new List<Error>
         {
             new HttpError

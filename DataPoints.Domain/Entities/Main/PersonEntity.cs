@@ -9,9 +9,12 @@ public class PersonEntity : AuditableStatefulEntity<Guid>
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public string Avatar { get; set; } = string.Empty;
+    public string? Avatar { get; set; } 
     public DateTime BirthDate { get; set; }
     public string DocumentNumber { get; set; } = string.Empty;
+    public string NormalizedDocumentNumber { get; set; } = string.Empty;
     public DocumentType DocumentType { get; set; }
+    public PersonType PersonType { get; set; }
     public DateTime DateInclusion { get; set; }
+    public string UserName => $"{FirstName} {LastName}#{Id}";
 }

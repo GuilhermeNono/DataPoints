@@ -4,9 +4,11 @@
         constraint PK_User primary key
         constraint DF_User_Id default newsequentialid(),
     Email            varchar(120)     not null,
+    NormalizedEmail  varchar(120)     not null,
+    SecurityStamp    varchar(120)     not null,
     IsEmailConfirmed bit              not null,
     PasswordHash     varchar(258)     not null,
-    Salt             varchar(125)     not null,
+    IsActive         bit              not null,
     Operation        char(1)          not null,
     LastChangeAt     Datetime         not null,
     LastChangeBy     Varchar(255)     not null
@@ -23,23 +25,35 @@ CREATE TABLE Dcm_Types
 
 go
 
+CREATE TABLE Ppl_Type
+(
+    Id   int          not null
+        constraint PK_PersonType primary key,
+    Name varchar(125) not null
+)
+
+go
+
 CREATE TABLE Ppl_People
 (
-    Id             uniqueidentifier not null
+    Id                       uniqueidentifier not null
         constraint PK_Person primary key
         references Ath_Users (Id),
-    FirstName      varchar(125)     not null,
-    LastName       varchar(125)     not null,
-    Avatar         varchar(800)     not null,
-    BirthDate      DateTime         not null,
-    IsActive       Bit              not null,
-    DocumentNumber varchar(80)      not null,
-    DocumentType   int              not null
+    FirstName                varchar(125)     not null,
+    LastName                 varchar(125)     not null,
+    Avatar                   varchar(800)     null,
+    BirthDate                DateTime         not null,
+    IsActive                 Bit              not null,
+    DocumentNumber           varchar(80)      not null,
+    NormalizedDocumentNumber varchar(80)      not null,
+    DocumentType             int              not null
         constraint FK_Person_Document references Dcm_Types (Id),
-    DateInclusion  Datetime         not null,
-    Operation      char(1)          not null,
-    LastChangeAt   Datetime         not null,
-    LastChangeBy   Varchar(255)     not null
+    PersonType               int              not null
+        constraint FK_Person_Type references Ppl_Type (Id),
+    DateInclusion            Datetime         not null,
+    Operation                char(1)          not null,
+    LastChangeAt             Datetime         not null,
+    LastChangeBy             Varchar(255)     not null
 )
 
 go

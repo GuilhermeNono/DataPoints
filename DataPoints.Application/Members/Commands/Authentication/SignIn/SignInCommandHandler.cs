@@ -23,7 +23,7 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, SignInRespons
 
     public async Task<SignInResponse> Handle(SignInCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.FindByLogin(request.Email)
+        var user = await _userRepository.FindByNormalizedEmail(request.Email)
                    ?? throw new LoginNotFoundException();
 
         var passwordCheck = await _sender.Send(new PasswordAuthorizationQuery(user.PasswordHash, request.Password), cancellationToken);

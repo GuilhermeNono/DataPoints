@@ -20,5 +20,7 @@ public class UserLogEntity : UserEntity, IEntityLog
         Email = entity.Email;
         IsEmailConfirmed = entity.IsEmailConfirmed;
         PasswordHash = entity.PasswordHash;
+        NormalizedEmail = entity.NormalizedEmail;
+        SecurityStamp = entity.SecurityStamp;
     }
 }

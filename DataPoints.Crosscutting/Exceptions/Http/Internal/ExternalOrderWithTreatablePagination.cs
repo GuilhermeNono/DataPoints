@@ -1,9 +1,9 @@
-﻿using DataPoints.Crosscutting.Messages;
-using DataPoints.Domain.Errors.Exceptions;
+﻿using DataPoints.Crosscutting.Exceptions.Http.Internal.Abstractions;
+using DataPoints.Crosscutting.Messages;
 
 namespace DataPoints.Crosscutting.Exceptions.Http.Internal;
 
-public class ExternalOrderWithTreatablePagination : TreatableException
+public class ExternalOrderWithTreatablePagination : InternalException
 {
     public ExternalOrderWithTreatablePagination() : base(ErrorMessage.Exception
         .ExternalOrderWithInternalPagination())

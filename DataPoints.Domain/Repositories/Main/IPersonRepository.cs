@@ -5,5 +5,5 @@ namespace DataPoints.Domain.Repositories.Main;
 
 public interface IPersonRepository : ICrudRepository<PersonEntity, Guid>
 {
-    
+    Task<PersonEntity?> FindByDocument(string documentNormalized);
 }

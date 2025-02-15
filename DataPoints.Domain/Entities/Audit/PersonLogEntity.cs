@@ -25,5 +25,6 @@ public class PersonLogEntity : PersonEntity, IEntityLog
         DocumentNumber = entity.DocumentNumber;
         DocumentType = entity.DocumentType;
         DateInclusion = entity.DateInclusion;
+        NormalizedDocumentNumber = entity.NormalizedDocumentNumber;
     }
 }
