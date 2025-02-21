@@ -1,7 +1,7 @@
 ﻿Create table Ath_Users
 (
     Id               bigint           not null
-        constraint PK_User primary key,
+        constraint PK_User primary key identity ,
     IdUser           uniqueidentifier not null,
     Email            varchar(120)     not null,
     IsEmailConfirmed bit              not null,
@@ -26,7 +26,7 @@ CREATE TABLE Ppl_People
     IdPerson                 uniqueidentifier not null,
     FirstName                varchar(125)     not null,
     LastName                 varchar(125)     not null,
-    Avatar                   varchar(800)     not null,
+    Avatar                   varchar(800)     null,
     BirthDate                DateTime         not null,
     IsActive                 Bit              not null,
     DocumentNumber           varchar(80)      not null,

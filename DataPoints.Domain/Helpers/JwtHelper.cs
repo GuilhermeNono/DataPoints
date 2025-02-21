@@ -18,10 +18,10 @@ public static class JwtHelper
         .Where(claim => claim.Type == ClaimTypes.Role)
         .Select(claim => claim.Value);
     
-    private static long GetLoggedPersonId(IEnumerable<Claim> claims)
+    private static Guid GetLoggedPersonId(IEnumerable<Claim> claims)
     {
         return claims.Where(claim => claim.Type == ClaimType.Id.ToString())
-            .Select(claim => Convert.ToInt64(claim.Value)).FirstOrDefault();
+            .Select(claim => new Guid(claim.Value)).FirstOrDefault();
     }
 
     private static string GetLoggedPersonName(IEnumerable<Claim> claims)

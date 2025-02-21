@@ -102,16 +102,16 @@ public static class ServiceExtensions
             .AddPolicy(RoleHelper.User, policy => { policy.RequireRole(RoleHelper.User); });
         
         services.Configure<DataProtectionTokenProviderOptions>(opt =>
-            opt.TokenLifespan = TimeSpan.FromMinutes(1));
+            opt.TokenLifespan = TimeSpan.FromMinutes(3));
         
-        services.AddIdentity<UserEntity, ProfileEntity>(o =>
+        services.AddIdentity<UserEntity, PermissionEntity>(o =>
             {
                 o.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
                 o.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
             })
             .AddUserStore<UserRepository>()
             .AddDefaultTokenProviders()
-            .AddRoleStore<ProfileRepository>()
+            .AddRoleStore<PermissionRepository>()
             .AddSignInManager<SignInManager<UserEntity>>();
         
         services.AddScoped<UserManager<UserEntity>>();

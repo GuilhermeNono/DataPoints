@@ -31,6 +31,7 @@ public class TokenJwtGenerateQueryHandler : IQueryHandler<TokenJwtGenerateQuery,
         var claims = new Dictionary<string, object>()
         {
             { JwtRegisteredClaimNames.Sub, user.Id.ToString() },
+            { "Email", user.Email},
             { JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString() }
         };
 
@@ -41,6 +42,8 @@ public class TokenJwtGenerateQueryHandler : IQueryHandler<TokenJwtGenerateQuery,
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Claims = claims,
+            Audience = _jwtConfiguration.Audience,
+            Issuer = _jwtConfiguration.Issuer,
             Expires = DateTime.UtcNow.AddMinutes(_jwtConfiguration.ExpirationInMinutes),
             SigningCredentials = signingCredentials
         };

@@ -55,9 +55,19 @@ public class SignUpCommandHandler : ICommandHandler<SignUpCommand, SignUpRespons
             NormalizedEmail = request.Email.ToUpper(),
         };
 
+        var userByEmail = await _userRepository.FindByNormalizedEmail(request.Email.ToUpper());
+
+        var userByDocument = await _personRepository.FindByDocument(document.Normalized);
+
+        if (userByEmail is { IsActive: true })
+            throw new EmailIsAlreadyInUseException(request.Email);
+
+        if (userByDocument is { IsActive: true })
+            throw new DocumentIsAlreadyInUseException(request.DocumentNumber);
+
         await _userManagerRepository.CreateAsync(user);
         await _userLogRepository.Add(new UserLogEntity(user), request.LoggedPerson.Name, cancellationToken);
-
+        
         var personEntity = new PersonEntity()
         {
             Id = user.Id,
@@ -69,17 +79,7 @@ public class SignUpCommandHandler : ICommandHandler<SignUpCommand, SignUpRespons
             LastName = request.LastName,
             PersonType = document.PersonType
         };
-
-        var userByEmail = await _userRepository.FindByNormalizedEmail(request.Email.ToUpper());
-
-        var userByDocument = await _personRepository.FindByDocument(document.Normalized);
-
-        if (userByEmail is { IsActive: true })
-            throw new EmailIsAlreadyInUseException(request.Email);
-
-        if (userByDocument is { IsActive: true })
-            throw new DocumentIsAlreadyInUseException(request.DocumentNumber);
-
+        
         await _personRepository.Add(personEntity, request.LoggedPerson.Name, cancellationToken);
         await _personLogRepository.Add(new PersonLogEntity(personEntity), request.LoggedPerson.Name, cancellationToken);
 

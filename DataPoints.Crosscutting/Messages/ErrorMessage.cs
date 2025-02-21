@@ -47,5 +47,7 @@ public static class ErrorMessage
 
         public static string PermissionRoleNotFound(string role) =>
             $"Não foi possível encontrar um cargo de nome {role}.";
+
+        public static string PersonNotFound() => "Não foi possivel encontrar um usuario com esse Id.";
     }
 }

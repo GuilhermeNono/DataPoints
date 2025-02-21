@@ -4,7 +4,7 @@ using DataPoints.Domain.Entities.Main;
 
 namespace DataPoints.Domain.Entities.Audit;
 
-[Table("Ppl_Person")]
+[Table("Ppl_People")]
 public class PersonLogEntity : PersonEntity, IEntityLog
 {
     public new long Id { get; init; }

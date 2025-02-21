@@ -2,6 +2,7 @@
 using DataPoints.Contract.Controller.Users.Responses;
 using DataPoints.Presentation.Controllers.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -14,6 +15,7 @@ public class UserController : ApiController
     {
     }
 
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpGet("{id:Guid}")]
     public async Task<ActionResult<UserGetResponse>> GetUsersAsync(Guid id)
     {

@@ -1,9 +1,13 @@
 using DataPoints.Application.Members.Commands.Authentication.SignIn;
 using DataPoints.Application.Members.Commands.Authentication.SignUp;
+using DataPoints.Application.Members.Queries.Authentication.Me;
+using DataPoints.Contract.Controller.Authentication.Me.Response;
 using DataPoints.Contract.Controller.Authentication.SignIn.Requests;
 using DataPoints.Contract.Controller.Authentication.SignIn.Responses;
 using DataPoints.Contract.Controller.Authentication.SignUp.Requests;
 using DataPoints.Contract.Controller.Authentication.SignUp.Responses;
+using DataPoints.Domain.Annotations;
+using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Interfaces;
 using DataPoints.Presentation.Controllers.Abstractions;
 using MediatR;
@@ -34,5 +38,12 @@ public class AuthenticationController : ApiController
         var result = await Sender.Send(SignUpCommand.ToCommand(user, LoggedPerson));
         
         return Created("v1/auth/signin", result);
+    }
+
+    [Protected(RoleHelper.User)]
+    [HttpGet("me")]
+    public async Task<ActionResult<MeResponse>> MeAsync()
+    {
+        return Ok(await Sender.Send(new MeQuery(LoggedPerson)));
     }
 }

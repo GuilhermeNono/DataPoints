@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DataPoints.Domain.Repositories.Main;
 
-public interface IProfileRepository : ICrudRepository<ProfileEntity, long>, IRoleStore<ProfileEntity>
+public interface IProfileRepository : ICrudRepository<ProfileEntity, long>
 {
     Task<ProfileEntity?> FindByRole(Guid idUser, string role);
 }
