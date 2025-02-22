@@ -56,7 +56,7 @@ public class TransactionService(
         if (logLevel is TransactionLogLevel.Implicit)
             return;
 
-        if (whenTransactionsNotExist ? _transactions.IsNullOrEmpty() : !_transactions.IsNullOrEmpty())
+        if (whenTransactionsNotExist ? _transactions.Count == 0: _transactions.Count != 0)
             logger.LogInformation("{Message}", message);
     }
 

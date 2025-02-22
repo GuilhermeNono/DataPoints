@@ -15,7 +15,7 @@ public class UserController : ApiController
     {
     }
 
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize]
     [HttpGet("{id:Guid}")]
     public async Task<ActionResult<UserGetResponse>> GetUsersAsync(Guid id)
     {

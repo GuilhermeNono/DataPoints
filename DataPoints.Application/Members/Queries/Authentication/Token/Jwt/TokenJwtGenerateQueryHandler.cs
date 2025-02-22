@@ -14,13 +14,16 @@ public class TokenJwtGenerateQueryHandler : IQueryHandler<TokenJwtGenerateQuery,
 {
 
     private readonly IUserRepository _userRepository;
+    
+    private readonly IPermissionRepository _permissionRepository;
 
     private readonly IJwtConfiguration _jwtConfiguration;
 
-    public TokenJwtGenerateQueryHandler(IUserRepository userRepository, IJwtConfiguration jwtConfiguration)
+    public TokenJwtGenerateQueryHandler(IUserRepository userRepository, IJwtConfiguration jwtConfiguration, IPermissionRepository permissionRepository)
     {
         _userRepository = userRepository;
         _jwtConfiguration = jwtConfiguration;
+        _permissionRepository = permissionRepository;
     }
 
     public async Task<TokenJwtResponse> Handle(TokenJwtGenerateQuery request, CancellationToken cancellationToken)
@@ -28,20 +31,23 @@ public class TokenJwtGenerateQueryHandler : IQueryHandler<TokenJwtGenerateQuery,
         var user = await _userRepository.FindById(request.UserId)
                    ?? throw new UserNotFoundException(request.UserId);
 
-        var claims = new Dictionary<string, object>()
+        var permissions = await _permissionRepository.FindByUser(request.UserId)
+            ?? throw new UserNotFoundException(request.UserId);
+
+        var claims = new List<Claim>
         {
-            { JwtRegisteredClaimNames.Sub, user.Id.ToString() },
-            { "Email", user.Email},
-            { JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString() }
+            new( JwtRegisteredClaimNames.Sub, user.Id.ToString() ),
+            new( JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString() )
         };
 
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey));
-        var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+        claims.AddRange(permissions.Select(x => new Claim(ClaimTypes.Role, x.Name)));
+        
+        SigningCredentials signingCredentials = 
+            new (new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey)), SecurityAlgorithms.HmacSha256);
+        
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Claims = claims,
+            Subject = new ClaimsIdentity(claims),
             Audience = _jwtConfiguration.Audience,
             Issuer = _jwtConfiguration.Issuer,
             Expires = DateTime.UtcNow.AddMinutes(_jwtConfiguration.ExpirationInMinutes),

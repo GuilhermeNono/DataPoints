@@ -7,4 +7,5 @@ namespace DataPoints.Domain.Repositories.Main;
 public interface IPermissionRepository : ICrudRepository<PermissionEntity, int>, IRoleStore<PermissionEntity>
 {
     Task<PermissionEntity?> FindByName(string role);
+    Task<IEnumerable<PermissionEntity>> FindByUser(Guid userId);
 }

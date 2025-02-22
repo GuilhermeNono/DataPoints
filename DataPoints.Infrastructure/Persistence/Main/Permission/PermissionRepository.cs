@@ -3,6 +3,7 @@ using DataPoints.Domain.Repositories.Main;
 using DataPoints.Infrastructure.EFCore.Abstractions;
 using DataPoints.Infrastructure.EFCore.Database.Context;
 using DataPoints.Infrastructure.Persistence.Main.Permission.Queries.FindByName;
+using DataPoints.Infrastructure.Persistence.Main.Permission.Queries.FindByUser;
 using Microsoft.AspNetCore.Identity;
 
 namespace DataPoints.Infrastructure.Persistence.Main.Permission;
@@ -18,6 +19,13 @@ public class PermissionRepository : CrudRepository<PermissionEntity, int>, IPerm
         var query = new FindByNameQuery(new FindByNameFilter(role));
 
         return QuerySingle(query);
+    }
+
+    public Task<IEnumerable<PermissionEntity>> FindByUser(Guid userId)
+    {
+        var query = new FindByUserQuery(new FindByUserFilter(userId));
+
+        return Task.FromResult(Query(query));
     }
 
     public Task<IdentityResult> CreateAsync(PermissionEntity role, CancellationToken cancellationToken)

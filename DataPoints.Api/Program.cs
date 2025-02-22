@@ -48,6 +48,8 @@ builder.Services.ConfigureDatabase(builder.Configuration)
 #region || Identity ||
 
 builder.Services.ConfigureIdentity();
+builder.Services.ConfigureAuthentication();
+builder.Services.ConfigureAuthorization();
 
 #endregion
 
@@ -68,15 +70,9 @@ app.RunFunctionsDbUp(builder.Configuration)
 
 #endregion
 
-#region || Identity ||
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-#endregion
-
-app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+app.UseSerilogRequestLogging();
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();

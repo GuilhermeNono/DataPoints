@@ -76,9 +76,16 @@ public static class ServiceExtensions
 
     #endregion
 
+    public static void ConfigureAuthorization(this IServiceCollection services)
+    {
+        services.AddAuthorizationBuilder()
+            .AddPolicy(RoleHelper.Administrator, policy => { policy.RequireRole(RoleHelper.Administrator); })
+            .AddPolicy(RoleHelper.User, policy => { policy.RequireRole(RoleHelper.User); });
+    }
+
     #region || Identity ||
 
-    public static void ConfigureIdentity(this IServiceCollection services)
+    public static void ConfigureAuthentication(this IServiceCollection services)
     {
         var jwtConfiguration = services.BuildServiceProvider().GetRequiredService<IJwtConfiguration>();
 
@@ -95,15 +102,15 @@ public static class ServiceExtensions
                     ValidAudience = jwtConfiguration.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey))
                 };
+                
             });
-        
-        services.AddAuthorizationBuilder()
-            .AddPolicy(RoleHelper.Administrator, policy => { policy.RequireRole(RoleHelper.Administrator); })
-            .AddPolicy(RoleHelper.User, policy => { policy.RequireRole(RoleHelper.User); });
-        
+    }
+    
+    public static void ConfigureIdentity(this IServiceCollection services)
+    {
         services.Configure<DataProtectionTokenProviderOptions>(opt =>
             opt.TokenLifespan = TimeSpan.FromMinutes(3));
-        
+
         services.AddIdentity<UserEntity, PermissionEntity>(o =>
             {
                 o.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
@@ -113,11 +120,10 @@ public static class ServiceExtensions
             .AddDefaultTokenProviders()
             .AddRoleStore<PermissionRepository>()
             .AddSignInManager<SignInManager<UserEntity>>();
-        
+
         services.AddScoped<UserManager<UserEntity>>();
-        
+
         services.AddHttpContextAccessor();
-        services.AddAuthorization();
     }
 
     #endregion

@@ -2,12 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DataPoints.Domain.Annotations;
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 public class ProtectedAttribute : AuthorizeAttribute
 {
-    public ProtectedAttribute(string? roles = null)
+    public ProtectedAttribute(params string[] roles)
     {
-        AuthenticationSchemes = "Bearer";
-        Roles = roles;
+        Roles = string.Join(",", roles);
     }
 }
