@@ -97,7 +97,8 @@ public static class ServiceExtensions
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtConfiguration.Issuer,
                     ValidAudience = jwtConfiguration.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey)),
+                    ClockSkew = TimeSpan.Zero
                 };
             });
     }
@@ -119,8 +120,10 @@ public static class ServiceExtensions
 
     public static void ConfigureIdentity(this IServiceCollection services)
     {
+        var jwtConfiguration = services.BuildServiceProvider().GetRequiredService<IJwtConfiguration>();
+        
         services.Configure<DataProtectionTokenProviderOptions>(opt =>
-            opt.TokenLifespan = TimeSpan.FromMinutes(3));
+            opt.TokenLifespan = new TimeSpan(DateTime.UtcNow.AddMinutes(jwtConfiguration.ExpirationInMinutes).Ticks));
 
         services.AddIdentity<UserEntity, PermissionEntity>(o =>
             {

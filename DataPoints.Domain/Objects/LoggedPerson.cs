@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Helpers;
 
 namespace DataPoints.Domain.Objects;
@@ -12,4 +13,8 @@ public class LoggedPerson
     public bool IsAdministrator => Roles.Contains(RoleHelper.Administrator);
     public static LoggedPerson Anonymous() => new ();
     public static LoggedPerson System() => new (){Name = UserHelper.System};
+
+    public LoggedPerson()
+    {
+    }
 }

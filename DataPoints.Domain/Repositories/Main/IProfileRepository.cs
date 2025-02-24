@@ -7,4 +7,5 @@ namespace DataPoints.Domain.Repositories.Main;
 public interface IProfileRepository : ICrudRepository<ProfileEntity, long>
 {
     Task<ProfileEntity?> FindByRole(Guid idUser, string role);
+    Task<IEnumerable<PermissionEntity>> FindRolesByUser(Guid idUser);
 }

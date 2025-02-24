@@ -8,5 +8,7 @@ public class RefreshTokenEntity : AuditableEntity<long>
 {
     public string Token { get; set; } = string.Empty;
     public Guid IdUser { get; set; }
-    public DateTime DateExpired { get; set; } = DateTime.Now.AddMinutes(10);
+    public DateTime DateExpired { get; set; } = DateTime.UtcNow.AddMinutes(10);
+
+    public bool IsExpired => DateExpired.CompareTo(DateTime.UtcNow) <= 0;
 }

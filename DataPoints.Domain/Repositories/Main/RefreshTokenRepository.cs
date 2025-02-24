@@ -5,4 +5,5 @@ namespace DataPoints.Domain.Repositories.Main;
 
 public interface IRefreshTokenRepository : ICrudRepository<RefreshTokenEntity, long>
 {
+    Task<RefreshTokenEntity?> FindByRefreshToken(string refreshToken);
 }

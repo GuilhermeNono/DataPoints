@@ -16,5 +16,6 @@ public class PersonEntity : AuditableStatefulEntity<Guid>
     public DocumentType DocumentType { get; set; }
     public PersonType PersonType { get; set; }
     public DateTime DateInclusion { get; set; } = DateTime.Now;
-    public string UserName => $"{FirstName} {LastName}#{Id}";
+    public string UserName => $"{FullName}#{Id}";
+    public string FullName => $"{FirstName} {LastName}";
 }

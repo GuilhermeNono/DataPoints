@@ -1,7 +1,9 @@
+using DataPoints.Application.Members.Commands.Authentication.Refresh;
 using DataPoints.Application.Members.Commands.Authentication.SignIn;
 using DataPoints.Application.Members.Commands.Authentication.SignUp;
 using DataPoints.Application.Members.Queries.Authentication.Me;
 using DataPoints.Contract.Controller.Authentication.Me.Response;
+using DataPoints.Contract.Controller.Authentication.Refresh;
 using DataPoints.Contract.Controller.Authentication.SignIn.Requests;
 using DataPoints.Contract.Controller.Authentication.SignIn.Responses;
 using DataPoints.Contract.Controller.Authentication.SignUp.Requests;
@@ -38,6 +40,13 @@ public class AuthenticationController : ApiController
         var result = await Sender.Send(SignUpCommand.ToCommand(user, LoggedPerson));
         
         return Created("v1/auth/signin", result);
+    }    
+    
+    [AllowAnonymous]
+    [HttpPost("refresh")]
+    public async Task<ActionResult<SignInResponse>> RefreshAsync([FromBody] RefreshLoginRequest request)
+    {
+        return Ok(await Sender.Send(RefreshLoginCommand.ToCommand(request)));
     }
 
     [Authorize(Roles = RoleHelper.User)]
