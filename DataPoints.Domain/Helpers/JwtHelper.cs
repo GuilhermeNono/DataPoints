@@ -20,7 +20,7 @@ public static class JwtHelper
     
     private static Guid GetLoggedPersonId(IEnumerable<Claim> claims)
     {
-        return claims.Where(claim => claim.Type == ClaimType.Id.ToString())
+        return claims.Where(claim => claim.Type.Equals(ClaimTypes.NameIdentifier, StringComparison.CurrentCultureIgnoreCase))
             .Select(claim => new Guid(claim.Value)).FirstOrDefault();
     }
 
@@ -48,7 +48,7 @@ public static class JwtHelper
         return new LoggedPerson
         {
             Id = GetLoggedPersonId(user.Claims),
-            Name = GetLoggedPersonName(user.Claims),
+            // Name = GetLoggedPersonName(user.Claims),
             Roles = GetLoggedPersonRoles(user.Claims),
         };
     }

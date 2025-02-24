@@ -8,5 +8,6 @@ public class ProtectedAttribute : AuthorizeAttribute
     public ProtectedAttribute(params string[] roles)
     {
         Roles = string.Join(",", roles);
+        AuthenticationSchemes = "Bearer";
     }
 }

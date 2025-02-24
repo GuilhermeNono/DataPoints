@@ -40,7 +40,7 @@ public class AuthenticationController : ApiController
         return Created("v1/auth/signin", result);
     }
 
-    [Protected(RoleHelper.User)]
+    [Authorize(Roles = RoleHelper.User)]
     [HttpGet("me")]
     public async Task<ActionResult<MeResponse>> MeAsync()
     {

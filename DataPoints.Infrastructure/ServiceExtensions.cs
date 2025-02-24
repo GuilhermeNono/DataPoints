@@ -9,7 +9,6 @@ using DataPoints.Domain.Repositories.Main;
 using DataPoints.Infrastructure.EFCore.Database.Context;
 using DataPoints.Infrastructure.EFCore.Database.Services;
 using DataPoints.Infrastructure.Persistence.Audit;
-using DataPoints.Infrastructure.Persistence.Main;
 using DataPoints.Infrastructure.Persistence.Main.Permission;
 using DataPoints.Infrastructure.Persistence.Main.Person;
 using DataPoints.Infrastructure.Persistence.Main.Profile;
@@ -76,20 +75,18 @@ public static class ServiceExtensions
 
     #endregion
 
-    public static void ConfigureAuthorization(this IServiceCollection services)
-    {
-        services.AddAuthorizationBuilder()
-            .AddPolicy(RoleHelper.Administrator, policy => { policy.RequireRole(RoleHelper.Administrator); })
-            .AddPolicy(RoleHelper.User, policy => { policy.RequireRole(RoleHelper.User); });
-    }
-
-    #region || Identity ||
+    #region || Auth ||
 
     public static void ConfigureAuthentication(this IServiceCollection services)
     {
         var jwtConfiguration = services.BuildServiceProvider().GetRequiredService<IJwtConfiguration>();
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -102,10 +99,24 @@ public static class ServiceExtensions
                     ValidAudience = jwtConfiguration.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey))
                 };
-                
             });
     }
-    
+
+    public static void ConfigureAuthorization
+        (this IServiceCollection services)
+    {
+        services.AddAuthorization(opt =>
+        {
+            opt.AddPolicy(RoleHelper.Administrator, policy => { policy.RequireRole(RoleHelper.Administrator); });
+            opt.AddPolicy(RoleHelper.User, policy => { policy.RequireRole(RoleHelper.User); });
+        });
+    }
+
+    #endregion
+
+
+    #region || Identity ||
+
     public static void ConfigureIdentity(this IServiceCollection services)
     {
         services.Configure<DataProtectionTokenProviderOptions>(opt =>

@@ -1,7 +1,6 @@
 using DataPoints.Api.Extensions;
 using DataPoints.Api.Middlewares;
 using DataPoints.Application;
-using DataPoints.Domain.Entities.Main;
 using DataPoints.Infrastructure;
 using DataPoints.Infrastructure.DbUp;
 using DataPoints.Presentation.Controllers.Abstractions;
@@ -44,6 +43,7 @@ builder.Services.ConfigureDatabase(builder.Configuration)
     .AddAuditRepositories();
 
 #endregion
+
 
 #region || Identity ||
 
