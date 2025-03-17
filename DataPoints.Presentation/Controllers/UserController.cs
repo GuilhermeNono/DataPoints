@@ -1,5 +1,7 @@
 ﻿using DataPoints.Application.Members.Queries.User.GetById;
 using DataPoints.Contract.Controller.Users.Responses;
+using DataPoints.Domain.Annotations;
+using DataPoints.Domain.Enums;
 using DataPoints.Presentation.Controllers.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +17,7 @@ public class UserController : ApiController
     {
     }
 
-    [Authorize]
+    [Protected(RoleProfile.Administrator)]
     [HttpGet("{id:Guid}")]
     public async Task<ActionResult<UserGetResponse>> GetUsersAsync(Guid id)
     {

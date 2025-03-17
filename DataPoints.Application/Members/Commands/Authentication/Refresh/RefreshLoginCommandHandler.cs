@@ -3,6 +3,7 @@ using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Application.Members.Queries.Authentication.Token;
 using DataPoints.Application.Members.Queries.Generate.Logged;
 using DataPoints.Contract.Controller.Authentication.SignIn.Responses;
+using DataPoints.Crosscutting.Exceptions.Http.Unauthorized;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Authentication;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Repositories.Main;
@@ -31,7 +32,7 @@ public class RefreshLoginCommandHandler : ICommandHandler<RefreshLoginCommand, S
                       ?? throw new RefreshNotFoundException();
         
         if(refresh.IsExpired)
-            throw new SecurityException("Refresh token expirado");
+            throw new ExpiredTokenException();
         
         var user = await _userRepository.FindById(refresh.IdUser)
             ?? throw new UserNotFoundException(refresh.IdUser);

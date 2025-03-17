@@ -51,5 +51,7 @@ public static class ErrorMessage
         public static string PersonNotFound() => "Não foi possível encontrar um usuário com esse Id.";
 
         public static string RefreshNotFound() => "Não foi possível encontrar esse refresh token.";
+
+        public static string ExpiredTokenException() => "O token se encontra expirado.";
     }
 }
