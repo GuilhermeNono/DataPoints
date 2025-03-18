@@ -21,10 +21,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="DbUp\Scripts\Versions\script-1.0.0.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\script-1.0.0.sql">
+      <EmbeddedResource Include="DbUp\Scripts\Versions\1.0\script-1.0.2.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
+      <None Remove="DbUp\Scripts\Versions\script-1.0.0.sql" />
       <None Remove="DbUp\Scripts\Audit\Versions\script-1.0.0.sql" />
       <EmbeddedResource Include="DbUp\Scripts\Audit\Versions\script-1.0.0.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -35,11 +35,24 @@
       </EmbeddedResource>
       <None Remove="DbUp\Scripts\Audit\Versions\script-1.0.1.sql" />
       <None Remove="DbUp\Scripts\Versions\script-1.0.1.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\script-1.0.1.sql">
+      <EmbeddedResource Include="DbUp\Scripts\Versions\1.0\script-1.0.0.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
       <None Remove="DbUp\Scripts\Versions\script-1.0.2.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\script-1.0.2.sql">
+      <EmbeddedResource Include="DbUp\Scripts\Versions\1.0\script-1.0.1.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="DbUp\Scripts\Versions\Temp\2025-03-17-2008.sql" />
+      <None Remove="DbUp\Scripts\Versions\1.1\script-1.1.0.sql" />
+      <EmbeddedResource Include="DbUp\Scripts\Versions\1.1\script-1.1.0.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="DbUp\Scripts\Versions\1.1\script-1.1.1.sql" />
+      <EmbeddedResource Include="DbUp\Scripts\Versions\1.1\script-1.1.1.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="DbUp\Scripts\Versions\1.0\script-1.0.3.sql" />
+      <EmbeddedResource Include="DbUp\Scripts\Versions\1.0\script-1.0.3.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
     </ItemGroup>

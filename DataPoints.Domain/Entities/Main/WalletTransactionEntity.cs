@@ -9,5 +9,6 @@ public class WalletTransactionEntity : AuditableEntity<Guid>
     public Guid IdWalletFrom { get; set; }
     public Guid IdWalletTo { get; set; }
     public decimal Amount { get; set; }
+    public bool IsCredit { get; set; }
     public string TransactionHash { get; set; } = string.Empty;
 }

@@ -1,3 +1,0 @@
--- CREATE TABLE Blc_Block(
---     
--- )

@@ -9,6 +9,7 @@ using DataPoints.Domain.Repositories.Main;
 using DataPoints.Infrastructure.EFCore.Database.Context;
 using DataPoints.Infrastructure.EFCore.Database.Services;
 using DataPoints.Infrastructure.Persistence.Audit;
+using DataPoints.Infrastructure.Persistence.Main.Block;
 using DataPoints.Infrastructure.Persistence.Main.Permission;
 using DataPoints.Infrastructure.Persistence.Main.Person;
 using DataPoints.Infrastructure.Persistence.Main.Profile;
@@ -58,6 +59,7 @@ public static class ServiceExtensions
         services.AddScoped<IWalletRepository, WalletRepository>();
         services.AddScoped<IWalletTransactionRepository, WalletTransactionRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IBlockRepository, BlockRepository>();
 
         return services;
     }

@@ -4,7 +4,6 @@ using DataPoints.Domain.Annotations;
 using DataPoints.Domain.Enums;
 using DataPoints.Presentation.Controllers.Abstractions;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -19,8 +18,10 @@ public class UserController : ApiController
 
     [Protected(RoleProfile.Administrator)]
     [HttpGet("{id:Guid}")]
-    public async Task<ActionResult<UserGetResponse>> GetUsersAsync(Guid id)
+    public async Task<ActionResult<UserGetResponse>> GetUserByIdAsync(Guid id)
     {
         return Ok(await Sender.Send(new UserGetByIdQuery(id)));
     }
+    
+    
 }

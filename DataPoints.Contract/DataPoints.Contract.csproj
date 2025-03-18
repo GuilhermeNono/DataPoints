@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <Folder Include="Controller\Authentication\Me\Request\" />
+      <Folder Include="Controller\Transaction\Insert\Response\" />
     </ItemGroup>
 
 </Project>

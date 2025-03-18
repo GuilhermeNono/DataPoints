@@ -5,4 +5,5 @@ namespace DataPoints.Domain.Repositories.Main;
 
 public interface IWalletTransactionRepository : ICrudRepository<WalletTransactionEntity, Guid>
 {
+    Task<decimal> FindAmountByWallet(Guid walletId);
 }

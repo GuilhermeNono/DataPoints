@@ -53,5 +53,11 @@ public static class ErrorMessage
         public static string RefreshNotFound() => "Não foi possível encontrar esse refresh token.";
 
         public static string ExpiredTokenException() => "O token se encontra expirado.";
+
+        public static string WalletPublicKeyNotFound(string publicKey) => $"Não foi encontrada nem uma carteira com a chave {publicKey}.";
+
+        public static string WalletUserNotFound(Guid userId) => $"Nâo foi possivel encontrar uma carteira para o usuario {userId}.";
+
+        public static string WalletNotFound(Guid walletId) => $"A carteira de id {walletId} não foi encontrada.";
     }
 }

@@ -17,27 +17,13 @@ public abstract class TreatableException : Exception, ITreatableException
 
     protected Logger Logger => _logger.Value;
 
-    protected TreatableException()
-    {
-    }
-
     protected TreatableException(string message) : base(message)
     {
     }
 
     public virtual IEnumerable<Error> ThrowHandledException()
     {
-
         Logger.Error(this, Message);
-        return new List<Error>
-        {
-            new HttpError
-            {
-                StatusCode = (int)StatusCode,
-                Code = Code,
-                Date = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-                Description = Message
-            }
-        };
+        return [new HttpError()];
     }
 }
