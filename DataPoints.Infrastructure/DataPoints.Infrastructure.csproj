@@ -55,6 +55,10 @@
       <EmbeddedResource Include="DbUp\Scripts\Versions\1.0\script-1.0.3.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
+      <None Remove="DbUp\Scripts\Versions\1.0\script-1.0.4.sql" />
+      <EmbeddedResource Include="DbUp\Scripts\Versions\1.0\script-1.0.4.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

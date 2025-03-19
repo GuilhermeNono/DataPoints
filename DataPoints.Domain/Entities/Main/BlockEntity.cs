@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
+using System.Security.Cryptography;
 using DataPoints.Domain.Database.Entity;
 
 namespace DataPoints.Domain.Entities.Main;
@@ -7,6 +9,24 @@ namespace DataPoints.Domain.Entities.Main;
 public class BlockEntity : Entity<Guid>
 {
     public string Hash { get; set; } = string.Empty;
-    public string PreviousHash { get; set; } = string.Empty;
-    public DateTime DateInclusion { get; set; }
+    public string PreviousHash { get; set; }
+    public DateTime DateInclusion { get; set; } = DateTime.UtcNow;
+
+    public BlockEntity(string previousHash)
+    {
+        PreviousHash = previousHash;
+    }
+
+    public BlockEntity()
+    {
+    }
+
+    public string CalculateHash(IEnumerable<WalletTransactionEntity> transactions)
+    {
+        string rawData = $"{Id}|{PreviousHash}|{DateInclusion}|T={string.Join('|', transactions.Select(x => x.TransactionSerialized))}";
+        byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawData));
+        return Hash = Convert.ToBase64String(bytes);
+    }
+    
+    
 }

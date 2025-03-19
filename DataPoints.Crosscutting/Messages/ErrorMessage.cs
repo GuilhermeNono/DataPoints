@@ -59,5 +59,12 @@ public static class ErrorMessage
         public static string WalletUserNotFound(Guid userId) => $"Nâo foi possivel encontrar uma carteira para o usuario {userId}.";
 
         public static string WalletNotFound(Guid walletId) => $"A carteira de id {walletId} não foi encontrada.";
+
+        public static string LastBlockNotFound() =>
+            "Não foi possivel completar a transação, pois o ultimo bloco não foi encontrado.";
+
+        public static string TransactionsNotFound() => "Não foi possivel localizar as transações.";
+
+        public static string LoggedPersonNotFound() => "Não foi possivel encontrar o usuario logado na base de dados.";
     }
 }

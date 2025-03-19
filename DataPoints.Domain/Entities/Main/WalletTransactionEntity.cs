@@ -10,5 +10,7 @@ public class WalletTransactionEntity : AuditableEntity<Guid>
     public Guid IdWalletTo { get; set; }
     public decimal Amount { get; set; }
     public bool IsCredit { get; set; }
-    public string TransactionHash { get; set; } = string.Empty;
+    public Guid? IdBlock { get; set; }
+
+    public string TransactionSerialized => $"{Id}|{IdWalletFrom}|{IdWalletTo}|${Amount}|C={IsCredit}";
 }

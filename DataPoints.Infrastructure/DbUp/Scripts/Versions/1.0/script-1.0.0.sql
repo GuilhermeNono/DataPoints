@@ -78,18 +78,18 @@ go
 
 CREATE TABLE Wlt_Transactions
 (
-    Id              uniqueidentifier not null
+    Id           uniqueidentifier not null
         constraint PK_WalletTransaction primary key
         constraint DF_WalletTransaction_Id default NEWID(),
-    IdWalletFrom    uniqueidentifier not null
+    IdWalletFrom uniqueidentifier not null
         constraint FK_WalletTransaction_WalletFrom references Wlt_Wallets,
-    IdWalletTo      uniqueidentifier not null
+    IdWalletTo   uniqueidentifier not null
         constraint FK_WalletTransaction_WalletTo references Wlt_Wallets,
-    Amount          Decimal(18, 8)   not null,
-    TransactionHash Varchar(800)     not null,
-    Operation       char(1)          not null,
-    LastChangeAt    Datetime         not null,
-    LastChangeBy    Varchar(255)     not null
+    Amount       Decimal(18, 8)   not null,
+    IdBlock      UNIQUEIDENTIFIER null,
+    Operation    char(1)          not null,
+    LastChangeAt Datetime         not null,
+    LastChangeBy Varchar(255)     not null
 )
 
 go
