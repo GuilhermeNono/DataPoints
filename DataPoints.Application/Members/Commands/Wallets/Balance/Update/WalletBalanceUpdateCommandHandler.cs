@@ -1,6 +1,8 @@
 using DataPoints.Application.Members.Abstractions.Commands;
+using DataPoints.Crosscutting.Exceptions.Http.Internal;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
 using DataPoints.Domain.Entities.Audit;
+using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Repositories.Audit;
 using DataPoints.Domain.Repositories.Main;
 
@@ -27,11 +29,22 @@ public class WalletBalanceUpdateCommandHandler : ICommandHandler<WalletBalanceUp
         var newBalance = await _walletTransaction.FindAmountByWallet(request.WalletId);
 
         if (newBalance < 0)
-            throw new Exception("Houve um problema durante a atualização da carteira.");
+        {
+            wallet.IsBlocked = true;
+            
+            await UpdateWallet(wallet, request.LoggedPerson.Name, cancellationToken);
+            
+            throw new ProhibitedBalanceAmountException(newBalance);
+        }
         
         wallet.Balance = newBalance;
-        
-        await _wallet.Update(wallet, request.LoggedPerson.Name, cancellationToken);
-        await _walletLog.Update(new WalletLogEntity(wallet), request.LoggedPerson.Name, cancellationToken);
+
+        await UpdateWallet(wallet, request.LoggedPerson.Name, cancellationToken);
+    }
+
+    private async Task UpdateWallet(WalletEntity wallet, string loggedPersonName, CancellationToken cancellationToken)
+    {
+        await _wallet.Update(wallet, loggedPersonName, cancellationToken);
+        await _walletLog.Update(new WalletLogEntity(wallet), loggedPersonName, cancellationToken);
     }
 }

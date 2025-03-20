@@ -2,8 +2,11 @@ using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Application.Members.Commands.Transaction.Block.Insert;
 using DataPoints.Application.Members.Commands.Wallets.Balance.Update;
 using DataPoints.Contract.Transaction.Insert;
+using DataPoints.Crosscutting.Exceptions.Http.BadRequest;
+using DataPoints.Crosscutting.Exceptions.Http.Conflict;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
+using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Wallet;
 using DataPoints.Domain.Database.Queries.Base;
 using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Objects;
@@ -42,13 +45,13 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
         await UpdateWalletBalance(walletsId, request.LoggedPerson, cancellationToken);
 
         if (receiver.Id == sender.Id)
-            throw new Exception();
+            throw new TransactionForYourselfException();
         
         if(sender.Balance < request.Amount)
-            throw new Exception();
+            throw new InsufficientBalanceException();
         
         if(receiver.IsBlocked || !receiver.IsActive)
-            throw new Exception();
+            throw new ReceiverWalletIsUnavailableException();
 
         var senderTransaction = new WalletTransactionEntity
         {

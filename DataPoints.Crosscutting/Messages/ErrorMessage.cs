@@ -66,5 +66,15 @@ public static class ErrorMessage
         public static string TransactionsNotFound() => "Não foi possivel localizar as transações.";
 
         public static string LoggedPersonNotFound() => "Não foi possivel encontrar o usuario logado na base de dados.";
+
+        public static string TransactionForYourself() =>
+            "Não é possivel enviar os pontos, pois a carteira alvo é a sua.";
+
+        public static string InsufficientBalance() => "Não foi possivel completar a transação, pois você não possui pontos o suficiente para isso.";
+
+        public static string ReceiverWalletIsUnavailable() =>
+            "A carteira do destinatario se encontra indisponivel para novas transações.";
+
+        public static string ProhibitedBalanceAmount(decimal points) => "A quantidade atual de pontos presentes na carteira é inválida: ";
     }
 }

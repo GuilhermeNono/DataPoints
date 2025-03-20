@@ -1,6 +1,7 @@
 using DataPoints.Application.Members.Abstractions.Queries;
 using DataPoints.Contract.Controller.Users.Responses;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
+using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Repositories.Main;
 
 namespace DataPoints.Application.Members.Queries.User.GetById;
@@ -17,7 +18,7 @@ public class UserGetByIdQueryHandler : IQueryHandler<UserGetByIdQuery, UserGetRe
     public async Task<UserGetResponse> Handle(UserGetByIdQuery request, CancellationToken cancellationToken)
     {
         var entity = await _userRepository.FindById(request.Id)
-                     ?? throw new Exception();
+                     ?? throw new UserNotFoundException(request.Id);
 
         return new UserGetResponse
         {
