@@ -12,5 +12,5 @@ public class WalletTransactionEntity : AuditableEntity<Guid>
     public bool IsCredit { get; set; }
     public Guid? IdBlock { get; set; }
 
-    public string TransactionSerialized => $"{Id}|{IdWalletFrom}|{IdWalletTo}|${Amount}|C={IsCredit}";
+    public string TransactionSerialized => $"I={Id}|F={IdWalletFrom}|T={IdWalletTo}|A=${Amount}|C={IsCredit}";
 }

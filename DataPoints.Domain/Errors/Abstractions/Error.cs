@@ -5,8 +5,20 @@ using DataPoints.Domain.Errors.Abstractions.Interfaces;
 
 namespace DataPoints.Domain.Errors.Abstractions;
 
+[JsonDerivedType(typeof(HttpError))]
+[JsonDerivedType(typeof(ValidationError))]
 public abstract class Error : IOutputError
 {
+    protected Error(string? code, string? description)
+    {
+        Code = code;
+        Description = description;
+    }
+
+    protected Error()
+    {
+    }
+
     [JsonIgnore] public string? Code { get; init; } = nameof(HttpStatusCode.InternalServerError);
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

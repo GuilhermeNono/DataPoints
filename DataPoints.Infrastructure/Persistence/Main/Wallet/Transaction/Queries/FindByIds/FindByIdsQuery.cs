@@ -9,6 +9,6 @@ public class FindByIdsQuery(FindByIdsFilter filter) : CustomQuery<FindByIdsFilte
     {
         Add("   SELECT * ");
         Add("     FROM Wlt_Transactions ");
-        Add($"    WHERE Id in ({Param(x => x.IdJoined)}) ");
+        Add($"    WHERE Id in ({Param(x => x.Ids)}) ");
     }
 }

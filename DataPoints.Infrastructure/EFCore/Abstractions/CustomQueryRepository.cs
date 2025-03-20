@@ -16,9 +16,9 @@ public abstract class CustomQueryRepository<TEntity> : EfContext<TEntity> where 
         return Context.Database.SqlQueryRaw<TResult>(query.Query, query.Parameters()!).FirstOrDefaultAsync();
     }
 
-    protected Task<TResult?> QuerySingle<TResult>(IQuery<TResult> query)
+    protected Task<TResult?> QuerySingle<TResult>(IQuery<TResult> query) where TResult : class
     {
-        return Context.Database.SqlQueryRaw<TResult>(query.Query).FirstOrDefaultAsync();
+        return Task.FromResult(Context.Database.SqlQueryRaw<TResult>(query.Query).AsNoTracking().AsEnumerable().FirstOrDefault());
     }
 
     protected IEnumerable<TResult> Query<TFilter, TResult>(IQuery<TResult, TFilter> query)

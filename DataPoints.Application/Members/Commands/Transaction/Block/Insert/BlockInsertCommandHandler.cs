@@ -22,16 +22,28 @@ public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, str
         var lastBlock = await _blockRepository.FindLastBlock()
             ?? throw new LastBlockNotFoundException();
         
-        var transactions = (await _walletTransactionRepository.FindByIds(request.Transactions)).ToList();
+        var transactions = new List<WalletTransactionEntity>();
+
+        foreach (var transaction in request.Transactions)
+        {
+            var walletTransaction = await _walletTransactionRepository.FindById(transaction);
+            
+            if (walletTransaction == null)
+                continue;
+            
+            transactions.Add(walletTransaction);
+        }
 
         if (transactions.Count <= 0)
             throw new TransactionsNotFoundException();
         
         var newBlock = new BlockEntity(lastBlock.Hash);
 
+        await _blockRepository.Add(newBlock, request.LoggedPerson.Name, cancellationToken);
+        
         newBlock.CalculateHash(transactions);
         
-        await _blockRepository.Add(newBlock, request.LoggedPerson.Name, cancellationToken);
+        await _blockRepository.Update(newBlock, request.LoggedPerson.Name, cancellationToken);
 
         foreach (var transaction in transactions)
         {

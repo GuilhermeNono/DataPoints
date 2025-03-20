@@ -1,9 +1,12 @@
 using DataPoints.Api.Extensions;
 using DataPoints.Api.Middlewares;
 using DataPoints.Application;
+using DataPoints.Application.Members.Behaviours;
 using DataPoints.Infrastructure;
 using DataPoints.Infrastructure.DbUp;
 using DataPoints.Presentation.Controllers.Abstractions;
+using FluentValidation;
+using MediatR;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +23,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.ConfigureServices();
+
+#region || Fluent Validation ||
+
+builder.Services.AddValidatorsFromAssembly(AssemblyReference.Assembly);
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehaviour<,>));
+
+#endregion
+
 
 #region || Serilog Configuration ||
 

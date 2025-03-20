@@ -20,9 +20,9 @@ public class WalletTransactionRepository : CrudRepository<WalletTransactionEntit
         return QuerySingle(query);
     }
 
-    public Task<IEnumerable<WalletTransactionEntity>> FindByIds(IEnumerable<Guid> transactionsId)
+    public Task<IEnumerable<WalletTransactionEntity>>  FindByIds(IEnumerable<Guid> transactionsId)
     {
-        var query = new FindByIdsQuery(new FindByIdsFilter(transactionsId));
+        var query = new FindByIdsQuery(new FindByIdsFilter(transactionsId.ToArray()));
         
         return Task.FromResult(Query(query));
     }

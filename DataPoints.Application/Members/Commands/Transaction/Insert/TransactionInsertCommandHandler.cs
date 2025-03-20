@@ -43,6 +43,12 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
 
         if (receiver.Id == sender.Id)
             throw new Exception();
+        
+        if(sender.Balance < request.Amount)
+            throw new Exception();
+        
+        if(receiver.IsBlocked || !receiver.IsActive)
+            throw new Exception();
 
         var senderTransaction = new WalletTransactionEntity
         {
