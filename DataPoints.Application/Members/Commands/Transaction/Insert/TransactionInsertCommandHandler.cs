@@ -29,7 +29,8 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
         _walletTransactionRepository = walletTransactionRepository;
     }
 
-    public async Task<TransactionInsertResponse> Handle(TransactionInsertCommand request, CancellationToken cancellationToken)
+    public async Task<TransactionInsertResponse> Handle(TransactionInsertCommand request,
+        CancellationToken cancellationToken)
     {
         if (request.LoggedPerson.Id is null)
             throw new LoggedPersonNotFoundException();
@@ -39,19 +40,22 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
 
         var sender = await _walletRepository.FindByUser(request.LoggedPerson.Id.GetValueOrDefault())
                      ?? throw new WalletUserNotFoundException(request.LoggedPerson.Id.GetValueOrDefault());
-        
-        var walletsId = new List<Guid>{receiver.Id, sender.Id};
-        
-        await UpdateWalletBalance(walletsId, request.LoggedPerson, cancellationToken);
 
         if (receiver.Id == sender.Id)
             throw new TransactionForYourselfException();
-        
-        if(sender.Balance < request.Amount)
-            throw new InsufficientBalanceException();
-        
-        if(receiver.IsBlocked || !receiver.IsActive)
+
+        if (sender.IsBlocked || !receiver.IsActive)
+            throw new SenderWalletUnavailableException();
+
+        if (receiver.IsBlocked || !receiver.IsActive)
             throw new ReceiverWalletIsUnavailableException();
+
+        var walletsId = new List<Guid> { receiver.Id, sender.Id };
+
+        await UpdateWalletBalance(walletsId, request.LoggedPerson, cancellationToken);
+        
+        if (sender.Balance < request.Amount)
+            throw new InsufficientBalanceException();
 
         var senderTransaction = new WalletTransactionEntity
         {
@@ -68,7 +72,7 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
             IdWalletFrom = receiver.Id,
             IdWalletTo = sender.Id,
         };
-        
+
         await _walletTransactionRepository.Add(senderTransaction, request.LoggedPerson.Name, cancellationToken);
         await _walletTransactionRepository.Add(receiverTransaction, request.LoggedPerson.Name, cancellationToken);
 
@@ -82,9 +86,10 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
         return new TransactionInsertResponse(blockHash, DateTime.Now);
     }
 
-    private async Task UpdateWalletBalance(IList<Guid> walletsId, LoggedPerson loggedPerson, CancellationToken cancellationToken)
+    private async Task UpdateWalletBalance(IList<Guid> walletsId, LoggedPerson loggedPerson,
+        CancellationToken cancellationToken)
     {
         foreach (var walletId in walletsId)
             await _sender.Send(new WalletBalanceUpdateCommand(walletId, loggedPerson), cancellationToken);
-    } 
+    }
 }

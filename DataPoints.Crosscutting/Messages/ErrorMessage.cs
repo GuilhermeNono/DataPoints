@@ -75,6 +75,8 @@ public static class ErrorMessage
         public static string ReceiverWalletIsUnavailable() =>
             "A carteira do destinatario se encontra indisponivel para novas transações.";
 
-        public static string ProhibitedBalanceAmount(decimal points) => "A quantidade atual de pontos presentes na carteira é inválida: ";
+        public static string ProhibitedBalanceAmount(decimal points) => $"A quantidade atual de pontos presentes na carteira é inválida: {points}";
+
+        public static string SenderWalletUnavailable() => "A carteira do rementente se encontra indisponivel para novas transações.";
     }
 }
