@@ -8,6 +8,6 @@ public class FindLastBlockQuery : CustomQuery<BlockEntity>
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Blc_Blocks ");
+        Add("     FROM Blc_Block ");
     }
 }

@@ -4,7 +4,9 @@ using DataPoints.Application.Members.Commands.Wallets.Balance.Update;
 using DataPoints.Contract.Transaction.Insert;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
+using DataPoints.Domain.Database.Queries.Base;
 using DataPoints.Domain.Entities.Main;
+using DataPoints.Domain.Objects;
 using DataPoints.Domain.Repositories.Main;
 using MediatR;
 
@@ -34,6 +36,13 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
 
         var sender = await _walletRepository.FindByUser(request.LoggedPerson.Id.GetValueOrDefault())
                      ?? throw new WalletUserNotFoundException(request.LoggedPerson.Id.GetValueOrDefault());
+        
+        var walletsId = new List<Guid>{receiver.Id, sender.Id};
+        
+        await UpdateWalletBalance(walletsId, request.LoggedPerson, cancellationToken);
+
+        if (receiver.Id == sender.Id)
+            throw new Exception();
 
         var senderTransaction = new WalletTransactionEntity
         {
@@ -50,12 +59,11 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
             IdWalletFrom = receiver.Id,
             IdWalletTo = sender.Id,
         };
-
+        
         await _walletTransactionRepository.Add(senderTransaction, request.LoggedPerson.Name, cancellationToken);
         await _walletTransactionRepository.Add(receiverTransaction, request.LoggedPerson.Name, cancellationToken);
 
-        await _sender.Send(new WalletBalanceUpdateCommand(receiver.Id, request.LoggedPerson), cancellationToken);
-        await _sender.Send(new WalletBalanceUpdateCommand(sender.Id, request.LoggedPerson), cancellationToken);
+        await UpdateWalletBalance(walletsId, request.LoggedPerson, cancellationToken);
 
         var blockHash =
             await _sender.Send(
@@ -64,4 +72,10 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
 
         return new TransactionInsertResponse(blockHash, DateTime.Now);
     }
+
+    private async Task UpdateWalletBalance(IList<Guid> walletsId, LoggedPerson loggedPerson, CancellationToken cancellationToken)
+    {
+        foreach (var walletId in walletsId)
+            await _sender.Send(new WalletBalanceUpdateCommand(walletId, loggedPerson), cancellationToken);
+    } 
 }
