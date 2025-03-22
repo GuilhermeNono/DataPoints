@@ -78,5 +78,12 @@ public static class ErrorMessage
         public static string ProhibitedBalanceAmount(decimal points) => $"A quantidade atual de pontos presentes na carteira é inválida: {points}";
 
         public static string SenderWalletUnavailable() => "A carteira do rementente se encontra indisponivel para novas transações.";
+
+        public static string InvalidLeafsToCreateAMerkleTree() => "Não foi possivel prosseguir com a criação da Merkle Tree, pois não foram informados dados o suficiente.";
+
+        public static string BlockCorruption(Guid blockId) => $"As transações do bloco {blockId} estão corrompidas.";
+
+        public static string BlockTransactionNotFound(Guid blockId) =>
+            $"Não foi possivel encontrar as transações do bloco {blockId}.";
     }
 }

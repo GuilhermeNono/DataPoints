@@ -50,7 +50,7 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
         if (receiver.IsBlocked || !receiver.IsActive)
             throw new ReceiverWalletIsUnavailableException();
 
-        var walletsId = new List<Guid> { receiver.Id, sender.Id };
+        var walletsId = new List<WalletEntity> { receiver, sender };
 
         await UpdateWalletBalance(walletsId, request.LoggedPerson, cancellationToken);
         
@@ -86,10 +86,10 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
         return new TransactionInsertResponse(blockHash, DateTime.Now);
     }
 
-    private async Task UpdateWalletBalance(IList<Guid> walletsId, LoggedPerson loggedPerson,
+    private async Task UpdateWalletBalance(IList<WalletEntity> wallets, LoggedPerson loggedPerson,
         CancellationToken cancellationToken)
     {
-        foreach (var walletId in walletsId)
-            await _sender.Send(new WalletBalanceUpdateCommand(walletId, loggedPerson), cancellationToken);
+        foreach (var wallet in wallets)
+            wallet.Balance = await _sender.Send(new WalletBalanceUpdateCommand(wallet.Id, loggedPerson), cancellationToken);
     }
 }

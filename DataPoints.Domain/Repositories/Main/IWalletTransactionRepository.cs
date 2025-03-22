@@ -6,5 +6,5 @@ namespace DataPoints.Domain.Repositories.Main;
 public interface IWalletTransactionRepository : ICrudRepository<WalletTransactionEntity, Guid>
 {
     Task<decimal> FindAmountByWallet(Guid walletId);
-    Task<IEnumerable<WalletTransactionEntity>> FindByIds(IEnumerable<Guid> requestTransactions);
+    Task<IEnumerable<WalletTransactionEntity>> FindByIdBlock(Guid blockId);
 }

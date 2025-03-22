@@ -27,11 +27,8 @@ builder.Services.ConfigureServices();
 #region || Fluent Validation ||
 
 builder.Services.AddValidatorsFromAssembly(AssemblyReference.Assembly);
-builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
-builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehaviour<,>));
 
 #endregion
-
 
 #region || Serilog Configuration ||
 
@@ -45,6 +42,8 @@ builder.Host.UseSerilog((context, configuration) =>
 #region || MediatR ||
 
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(AssemblyReference.Assembly));
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehaviour<,>));
 
 #endregion
 
@@ -55,7 +54,6 @@ builder.Services.ConfigureDatabase(builder.Configuration)
     .AddAuditRepositories();
 
 #endregion
-
 
 #region || Identity ||
 

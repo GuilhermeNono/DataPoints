@@ -8,7 +8,7 @@ using DataPoints.Domain.Repositories.Main;
 
 namespace DataPoints.Application.Members.Commands.Wallets.Balance.Update;
 
-public class WalletBalanceUpdateCommandHandler : ICommandHandler<WalletBalanceUpdateCommand>
+public class WalletBalanceUpdateCommandHandler : ICommandHandler<WalletBalanceUpdateCommand, decimal>
 {
     private readonly IWalletRepository _wallet;
     private readonly IWalletLogRepository _walletLog;
@@ -21,7 +21,7 @@ public class WalletBalanceUpdateCommandHandler : ICommandHandler<WalletBalanceUp
         _walletLog = walletLog;
     }
 
-    public async Task Handle(WalletBalanceUpdateCommand request, CancellationToken cancellationToken)
+    public async Task<decimal> Handle(WalletBalanceUpdateCommand request, CancellationToken cancellationToken)
     {
         var wallet = await _wallet.FindById(request.WalletId) 
                      ?? throw new WalletNotFoundException(request.WalletId);
@@ -40,6 +40,8 @@ public class WalletBalanceUpdateCommandHandler : ICommandHandler<WalletBalanceUp
         wallet.Balance = newBalance;
 
         await UpdateWallet(wallet, request.LoggedPerson.Name, cancellationToken);
+        
+        return wallet.Balance; 
     }
 
     private async Task UpdateWallet(WalletEntity wallet, string loggedPersonName, CancellationToken cancellationToken)

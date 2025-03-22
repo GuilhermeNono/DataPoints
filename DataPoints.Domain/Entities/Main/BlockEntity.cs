@@ -10,6 +10,8 @@ public class BlockEntity : Entity<Guid>
 {
     public string Hash { get; set; } = string.Empty;
     public string PreviousHash { get; set; }
+    public string MerkleRoot { get; set; }
+    public bool IsValid { get; set; } = true;
     public DateTime DateInclusion { get; set; } = DateTime.UtcNow;
 
     public BlockEntity(string previousHash)
@@ -21,9 +23,9 @@ public class BlockEntity : Entity<Guid>
     {
     }
 
-    public string CalculateHash(IEnumerable<WalletTransactionEntity> transactions)
+    public string CalculateHash()
     {
-        string rawData = $"{Id}|{PreviousHash}|{DateInclusion}|T={string.Join('|', transactions.Select(x => x.TransactionSerialized))}";
+        string rawData = $"{Id}|{PreviousHash}|{DateInclusion}|MR={MerkleRoot}";
         byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawData));
         return Hash = Convert.ToBase64String(bytes);
     }
