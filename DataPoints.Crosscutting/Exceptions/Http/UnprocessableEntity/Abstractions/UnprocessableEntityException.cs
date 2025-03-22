@@ -6,4 +6,5 @@ namespace DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Abstractio
 public abstract class UnprocessableEntityException(string message) : TreatableException(message)
 {
     public override HttpStatusCode StatusCode => HttpStatusCode.UnprocessableEntity;
+    
 }
