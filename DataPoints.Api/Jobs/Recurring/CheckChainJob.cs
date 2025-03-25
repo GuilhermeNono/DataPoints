@@ -15,8 +15,8 @@ public class CheckChainJob : IRecurringJob
         _sender = sender;
     }
     
-    public async Task ExecuteAsync(CancellationToken cancellationToken)
+    public Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        await _sender.Send(new object(), cancellationToken);
+        return Task.CompletedTask;
     }
 }
