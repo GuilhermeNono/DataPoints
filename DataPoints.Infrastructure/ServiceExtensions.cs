@@ -9,6 +9,8 @@ using DataPoints.Domain.Repositories.Main;
 using DataPoints.Infrastructure.EFCore.Database.Context;
 using DataPoints.Infrastructure.EFCore.Database.Services;
 using DataPoints.Infrastructure.Persistence.Audit;
+using DataPoints.Infrastructure.Persistence.Main.Batch.Checkpoint;
+using DataPoints.Infrastructure.Persistence.Main.Batch.Validation;
 using DataPoints.Infrastructure.Persistence.Main.Block;
 using DataPoints.Infrastructure.Persistence.Main.Permission;
 using DataPoints.Infrastructure.Persistence.Main.Person;
@@ -60,6 +62,8 @@ public static class ServiceExtensions
         services.AddScoped<IWalletTransactionRepository, WalletTransactionRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IBlockRepository, BlockRepository>();
+        services.AddScoped<IBatchValidationRepository, BatchValidationRepository>();
+        services.AddScoped<IBatchCheckpointRepository, BatchCheckpointRepository>();
 
         return services;
     }
