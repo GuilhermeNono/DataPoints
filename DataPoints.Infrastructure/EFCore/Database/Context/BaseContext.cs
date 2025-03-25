@@ -36,8 +36,6 @@ public abstract class BaseContext<TContext>(DbContextOptions<TContext> options, 
         return CurrentTransaction ??= await Database.BeginTransactionAsync(SwitchTransactionType(transactionType), cancellationToken);
     }
 
-
-
     public async Task CommitTransactionAsync(CancellationToken cancellationToken)
     {
         try

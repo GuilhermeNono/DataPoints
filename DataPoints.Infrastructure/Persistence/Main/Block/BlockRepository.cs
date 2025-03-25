@@ -4,6 +4,7 @@ using DataPoints.Domain.Repositories.Main;
 using DataPoints.Infrastructure.EFCore.Abstractions;
 using DataPoints.Infrastructure.EFCore.Database.Context;
 using DataPoints.Infrastructure.Persistence.Main.Block.Queries.FindLastBlock;
+using DataPoints.Infrastructure.Persistence.Main.Block.Queries.FindNonValidated;
 
 namespace DataPoints.Infrastructure.Persistence.Main.Block;
 
@@ -19,5 +20,12 @@ public class BlockRepository : CrudRepository<BlockEntity, Guid>, IBlockReposito
             .OrderBy(x => x.DateInclusion, Sort.Desc);
 
         return QuerySingle(query);
+    }
+
+    public Task<IEnumerable<BlockEntity>> FindNonValidated()
+    {
+        var query = new FindNonValidatedQuery();
+
+        return Task.FromResult(Query(query));
     }
 }

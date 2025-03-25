@@ -5,7 +5,7 @@ using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Repositories.Main;
 using DataPoints.Domain.Security;
 
-namespace DataPoints.Application.Members.Commands.Transaction.Block.Insert;
+namespace DataPoints.Application.Members.Commands.Block.Insert;
 
 public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, string>
 {
@@ -32,7 +32,9 @@ public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, str
         var calculateMerkleRootFromLastBlock =
             MerkleTree.ComputeRoot(lastBlockTransactions.Select(x => x.TransactionSerialized).ToList());
 
-        if (!lastBlock.Hash.Equals("GenesisBlock", StringComparison.CurrentCultureIgnoreCase) &&
+        const string genesisBlock = "GenesisBlock";
+
+        if (!lastBlock.Hash.Equals(genesisBlock, StringComparison.CurrentCultureIgnoreCase) &&
             !calculateMerkleRootFromLastBlock.Equals(lastBlock.MerkleRoot, StringComparison.CurrentCultureIgnoreCase))
         {
             lastBlock.IsValid = false;

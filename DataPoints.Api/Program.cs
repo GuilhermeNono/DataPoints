@@ -6,6 +6,7 @@ using DataPoints.Infrastructure;
 using DataPoints.Infrastructure.DbUp;
 using DataPoints.Presentation.Controllers.Abstractions;
 using FluentValidation;
+using Hangfire;
 using MediatR;
 using Serilog;
 
@@ -63,6 +64,19 @@ builder.Services.ConfigureAuthorization();
 
 #endregion
 
+#region || HangFire ||
+
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFire")));
+
+builder.Services.AddHangfireServer();
+
+builder.Services.RegisterHangfireJobs();
+#endregion
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -70,6 +84,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHangfireDashboard();
 }
 
 #region || DbUp ||
@@ -88,5 +103,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();

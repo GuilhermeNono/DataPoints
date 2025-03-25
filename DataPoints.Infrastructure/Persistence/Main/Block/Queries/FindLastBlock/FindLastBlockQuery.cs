@@ -9,5 +9,6 @@ public class FindLastBlockQuery : CustomQuery<BlockEntity>
     {
         Add("   SELECT * ");
         Add("     FROM Blc_Block ");
+        Add("    WHERE IsValid = 1 ");
     }
 }

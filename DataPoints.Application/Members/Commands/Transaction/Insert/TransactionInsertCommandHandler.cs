@@ -1,5 +1,5 @@
 using DataPoints.Application.Members.Abstractions.Commands;
-using DataPoints.Application.Members.Commands.Transaction.Block.Insert;
+using DataPoints.Application.Members.Commands.Block.Insert;
 using DataPoints.Application.Members.Commands.Wallets.Balance.Update;
 using DataPoints.Contract.Transaction.Insert;
 using DataPoints.Crosscutting.Exceptions.Http.BadRequest;
