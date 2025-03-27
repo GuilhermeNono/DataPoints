@@ -15,7 +15,7 @@ public class BatchCheckpointRepository : CrudRepository<BatchCheckpointEntity, l
 
     public Task<IEnumerable<BatchCheckpointEntity>> FindByBatch(Guid validationId, bool showInvalidatedOnes = true)
     {
-        var query = new FindByBatchQuery(new FindByBatchFilter(validationId));
+        var query = new FindByBatchQuery(new FindByBatchFilter(validationId, showInvalidatedOnes));
         
         return Task.FromResult(Query(query));
     }

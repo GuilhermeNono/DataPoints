@@ -3,6 +3,7 @@ using DataPoints.Application.Members.Commands.Block.Validate;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
 using DataPoints.Domain.Entities.Main;
+using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Repositories.Main;
 using DataPoints.Domain.Security;
 using MediatR;
@@ -55,7 +56,7 @@ public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, str
 
         newBlock.MerkleRoot = merkleRoot;
 
-        newBlock.CalculateHash();
+        newBlock.Hash = BlockHelper.CalculateHash(newBlock);
 
         await _blockRepository.Add(newBlock, request.LoggedPerson.Name, cancellationToken);
 

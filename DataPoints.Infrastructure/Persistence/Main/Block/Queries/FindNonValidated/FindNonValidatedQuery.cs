@@ -13,5 +13,6 @@ public class FindNonValidatedQuery(FindNonValidatedFilter filter) : CustomQuery<
         Add("                       from Btc_Checkpoints btc");
         Add($"                     where IdBatch = {Param(x => x.ValidationId)} ");
         Add($"                       and IdBlock = blc.Id)");
+        Add($"     and IsValid = {Param(x => x.IsValid)} ");
     }
 }

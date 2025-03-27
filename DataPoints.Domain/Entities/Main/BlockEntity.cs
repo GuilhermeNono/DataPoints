@@ -22,13 +22,5 @@ public class  BlockEntity : Entity<Guid>
     public BlockEntity()
     {
     }
-
-    public string CalculateHash()
-    {
-        string rawData = $"{Id}|{PreviousHash}|{DateInclusion}|MR={MerkleRoot}";
-        byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawData));
-        return Hash = Convert.ToBase64String(bytes);
-    }
-    
     
 }

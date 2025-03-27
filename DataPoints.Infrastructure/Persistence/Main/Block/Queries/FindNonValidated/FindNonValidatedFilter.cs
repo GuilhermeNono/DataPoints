@@ -4,5 +4,5 @@ namespace DataPoints.Infrastructure.Persistence.Main.Block.Queries.FindNonValida
 
 public record FindNonValidatedFilter(Guid ValidationId) : IFilter
 {
-    
+    public bool IsValid => true;
 }

@@ -1,6 +1,7 @@
 using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Contract.Block.Validation;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;
+using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Repositories.Main;
 using DataPoints.Domain.Security;
 
@@ -35,11 +36,16 @@ public class BlockValidateCommandHandler : ICommandHandler<BlockValidateCommand,
         var calculateMerkleRootFromBlock =
             MerkleTree.ComputeRoot(blockTransactions.Select(x => x.TransactionSerialized).ToList());
 
-        var merkleRootInCorrupted = !block.Hash.Equals(GenesisBlock, StringComparison.CurrentCultureIgnoreCase) &&
+        var calculateHash = BlockHelper.CalculateHash(block);
+            
+        var merkleRootIsCorrupted = !block.Hash.Equals(GenesisBlock, StringComparison.CurrentCultureIgnoreCase) &&
                                     !calculateMerkleRootFromBlock.Equals(block.MerkleRoot,
                                         StringComparison.CurrentCultureIgnoreCase);
+        
+        var hashIsCorrupted = !calculateHash.Equals(block.Hash, StringComparison.CurrentCultureIgnoreCase);
+        
 
-        if (!merkleRootInCorrupted) return new BlockValidationResponse(block.IsValid);
+        if (!merkleRootIsCorrupted || !hashIsCorrupted) return new BlockValidationResponse(block.IsValid);
 
         block.IsValid = false;
         await _blockRepository.Update(block, request.LoggedPerson.Name, cancellationToken);
