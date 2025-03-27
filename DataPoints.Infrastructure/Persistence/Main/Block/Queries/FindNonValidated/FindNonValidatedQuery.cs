@@ -3,10 +3,15 @@ using DataPoints.Infrastructure.EFCore.Query.CustomQuery;
 
 namespace DataPoints.Infrastructure.Persistence.Main.Block.Queries.FindNonValidated;
 
-public class FindNonValidatedQuery : CustomQuery<BlockEntity>
+public class FindNonValidatedQuery(FindNonValidatedFilter filter) : CustomQuery<FindNonValidatedFilter, BlockEntity>(filter)
 {
     protected override void Prepare()
     {
-        throw new NotImplementedException();
+        Add("   SELECT * ");
+        Add("     FROM Blc_Block blc ");
+        Add("    where not exists(select 1 ");
+        Add("                       from Btc_Checkpoints btc");
+        Add($"                     where IdBatch = {Param(x => x.ValidationId)} ");
+        Add($"                       and IdBlock = blc.Id)");
     }
 }

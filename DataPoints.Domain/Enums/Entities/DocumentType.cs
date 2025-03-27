@@ -1,4 +1,4 @@
-﻿namespace DataPoints.Domain.Enums;
+﻿namespace DataPoints.Domain.Enums.Entities;
 
 public enum DocumentType
 {

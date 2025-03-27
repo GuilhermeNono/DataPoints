@@ -22,9 +22,11 @@ public class BlockRepository : CrudRepository<BlockEntity, Guid>, IBlockReposito
         return QuerySingle(query);
     }
 
-    public Task<IEnumerable<BlockEntity>> FindNonValidated()
+    public Task<IEnumerable<BlockEntity>> FindNonValidated(Guid validationId, int? pageSize = null)
     {
-        var query = new FindNonValidatedQuery();
+        var query = new FindNonValidatedQuery(new FindNonValidatedFilter(validationId))
+            .PageConfig(pageSize)
+            .OrderBy(x => x.DateInclusion, Sort.Desc);
 
         return Task.FromResult(Query(query));
     }

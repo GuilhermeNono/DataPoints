@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using DataPoints.Domain.Database.Entity;
 using DataPoints.Domain.Enums;
+using DataPoints.Domain.Enums.Entities;
 
 namespace DataPoints.Domain.Entities.Main;
 

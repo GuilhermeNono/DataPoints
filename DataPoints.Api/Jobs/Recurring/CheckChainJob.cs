@@ -1,4 +1,6 @@
 using DataPoints.Api.Jobs.Abstractions.Interfaces;
+using DataPoints.Application.Members.Commands.Block.Checkpoint;
+using DataPoints.Domain.Objects;
 using Hangfire;
 using MediatR;
 
@@ -15,8 +17,9 @@ public class CheckChainJob : IRecurringJob
         _sender = sender;
     }
     
-    public Task ExecuteAsync(CancellationToken cancellationToken)
+    [DisableConcurrentExecution(timeoutInSeconds: 10 * 60), AutomaticRetry(Attempts = 0)]
+    public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        return Task.CompletedTask;
+        await _sender.Send(new BlockValidateCheckpointCommand(LoggedPerson.System()), cancellationToken);
     }
 }

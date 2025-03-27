@@ -5,4 +5,5 @@ namespace DataPoints.Domain.Repositories.Main;
 
 public interface IBatchValidationRepository : ICrudRepository<BatchValidationEntity, Guid>
 {
+    Task<BatchValidationEntity?> FindLatestValidationAvailable();
 }

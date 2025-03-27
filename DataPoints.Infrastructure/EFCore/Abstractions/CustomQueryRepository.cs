@@ -13,12 +13,14 @@ public abstract class CustomQueryRepository<TEntity> : EfContext<TEntity> where 
     protected Task<TResult?> QuerySingle<TFilter, TResult>(IQuery<TResult, TFilter> query)
         where TFilter : IFilter
     {
-        return Context.Database.SqlQueryRaw<TResult>(query.Query, query.Parameters()!).FirstOrDefaultAsync();
+        return Task.FromResult(Context.Database.SqlQueryRaw<TResult>(query.Query, query.Parameters()!).AsEnumerable()
+            .FirstOrDefault());
     }
 
     protected Task<TResult?> QuerySingle<TResult>(IQuery<TResult> query) where TResult : class
     {
-        return Task.FromResult(Context.Database.SqlQueryRaw<TResult>(query.Query).AsNoTracking().AsEnumerable().FirstOrDefault());
+        return Task.FromResult(Context.Database.SqlQueryRaw<TResult>(query.Query).AsNoTracking().AsEnumerable()
+            .FirstOrDefault());
     }
 
     protected IEnumerable<TResult> Query<TFilter, TResult>(IQuery<TResult, TFilter> query)

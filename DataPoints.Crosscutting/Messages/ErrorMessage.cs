@@ -85,5 +85,7 @@ public static class ErrorMessage
 
         public static string BlockTransactionNotFound(Guid blockId) =>
             $"Não foi possivel encontrar as transações do bloco {blockId}.";
+
+        public static string CheckpointsNotFoundFromThisBatch() => "Não foi possivel encontrar checkpoints com esse Id de validação.";
     }
 }

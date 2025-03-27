@@ -1,9 +1,11 @@
 using DataPoints.Application.Members.Abstractions.Commands;
+using DataPoints.Application.Members.Commands.Block.Validate;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
 using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Repositories.Main;
 using DataPoints.Domain.Security;
+using MediatR;
 
 namespace DataPoints.Application.Members.Commands.Block.Insert;
 
@@ -11,12 +13,14 @@ public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, str
 {
     private readonly IBlockRepository _blockRepository;
     private readonly IWalletTransactionRepository _walletTransactionRepository;
+    private readonly ISender _sender;
 
     public BlockInsertCommandHandler(IBlockRepository blockRepository,
-        IWalletTransactionRepository walletTransactionRepository)
+        IWalletTransactionRepository walletTransactionRepository, ISender sender)
     {
         _blockRepository = blockRepository;
         _walletTransactionRepository = walletTransactionRepository;
+        _sender = sender;
     }
 
     public async Task<string> Handle(BlockInsertCommand request, CancellationToken cancellationToken)
@@ -24,22 +28,11 @@ public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, str
         var lastBlock = await _blockRepository.FindLastBlock()
                         ?? throw new LastBlockNotFoundException();
 
-        var lastBlockTransactions = (await _walletTransactionRepository.FindByIdBlock(lastBlock.Id)).ToList();
+        var validatedBlock = await _sender.Send(new BlockValidateCommand(lastBlock.Id, request.LoggedPerson),
+            cancellationToken);
 
-        if (lastBlockTransactions.Count == 0)
-            throw new BlockTransactionNotFoundException(lastBlock.Id);
-
-        var calculateMerkleRootFromLastBlock =
-            MerkleTree.ComputeRoot(lastBlockTransactions.Select(x => x.TransactionSerialized).ToList());
-
-        const string genesisBlock = "GenesisBlock";
-
-        if (!lastBlock.Hash.Equals(genesisBlock, StringComparison.CurrentCultureIgnoreCase) &&
-            !calculateMerkleRootFromLastBlock.Equals(lastBlock.MerkleRoot, StringComparison.CurrentCultureIgnoreCase))
-        {
-            lastBlock.IsValid = false;
+        if (!validatedBlock.IsValid)
             throw new BlockCorruptionException(lastBlock.Id);
-        }
 
         var transactions = new List<WalletTransactionEntity>();
 

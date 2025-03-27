@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using DataPoints.Domain.Enums;
+using DataPoints.Domain.Enums.Entities;
 using Premios.Domain.Helpers;
 
 namespace DataPoints.Domain.Helpers;

@@ -7,6 +7,7 @@ using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Entities.Audit;
 using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Enums;
+using DataPoints.Domain.Enums.Entities;
 using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Repositories.Audit;
 using DataPoints.Domain.Repositories.Main;

@@ -6,7 +6,7 @@ public class FindAmountByWalletQuery(FindAmountByWalletFilter filter) : CustomQu
 {
     protected override void Prepare()
     {
-        Add("   SELECT SUM(Amount) as Value");
+        Add("   SELECT IIF(SUM(Amount) is null, 0, SUM(Amount)) as Value");
         Add("     FROM Wlt_Transactions "); 
         Add($"   WHERE IdWalletTo = {Param(x => x.WalletId)} "); 
     }
