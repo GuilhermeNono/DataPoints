@@ -1,19 +1,16 @@
 ﻿using System.Security.Claims;
 using DataPoints.Domain.Enums;
 using DataPoints.Domain.Objects;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace DataPoints.Domain.Helpers;
 
 public static class JwtHelper
 {
     private static string GetFirstNameFromClaims(IEnumerable<Claim> claims) => claims
-        .Where(claim => claim.Type == ClaimTypes.Name)
-        .Select(claim => claim.Value).First();
+        .Where(claim => claim.Type == JwtRegisteredClaimNames.Name)
+        .Select(claim => claim.Value.Trim()).First();
 
-    private static string GetLastNameFromClaims(IEnumerable<Claim> claims) => claims
-        .Where(claim => claim.Type == nameof(ClaimType.LastName))
-        .Select(claim => claim.Value).FirstOrDefault(string.Empty);
-    
     private static IEnumerable<string> GetFirstRolesFromClaims(IEnumerable<Claim> claims) => claims
         .Where(claim => claim.Type == ClaimTypes.Role)
         .Select(claim => claim.Value);
@@ -28,7 +25,7 @@ public static class JwtHelper
     {
         var claimsOrdered = claims.ToList();
         return claimsOrdered.Count != 0
-            ? string.Concat(GetFirstNameFromClaims(claimsOrdered), GetLastNameFromClaims(claimsOrdered))
+            ? GetFirstNameFromClaims(claimsOrdered)
             : string.Empty;
     }
     
@@ -48,7 +45,7 @@ public static class JwtHelper
         return new LoggedPerson
         {
             Id = GetLoggedPersonId(user.Claims),
-            // Name = GetLoggedPersonName(user.Claims),
+            Name = GetLoggedPersonName(user.Claims),
             Roles = GetLoggedPersonRoles(user.Claims),
         };
     }

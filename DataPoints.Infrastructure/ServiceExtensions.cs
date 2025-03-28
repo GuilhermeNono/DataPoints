@@ -120,8 +120,7 @@ public static class ServiceExtensions
     }
 
     #endregion
-
-
+    
     #region || Identity ||
 
     public static void ConfigureIdentity(this IServiceCollection services)

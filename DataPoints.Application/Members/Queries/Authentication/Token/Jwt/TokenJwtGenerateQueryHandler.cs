@@ -3,6 +3,7 @@ using System.Text;
 using DataPoints.Application.Members.Abstractions.Queries;
 using DataPoints.Contract.Token.Jwt.Responses;
 using DataPoints.Crosscutting.Configurations;
+using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Person;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Repositories.Main;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -14,22 +15,27 @@ public class TokenJwtGenerateQueryHandler : IQueryHandler<TokenJwtGenerateQuery,
 {
 
     private readonly IUserRepository _userRepository;
+    private readonly IPersonRepository _personRepository;
     
     private readonly IPermissionRepository _permissionRepository;
 
     private readonly IJwtConfiguration _jwtConfiguration;
 
-    public TokenJwtGenerateQueryHandler(IUserRepository userRepository, IJwtConfiguration jwtConfiguration, IPermissionRepository permissionRepository)
+    public TokenJwtGenerateQueryHandler(IUserRepository userRepository, IJwtConfiguration jwtConfiguration, IPermissionRepository permissionRepository, IPersonRepository personRepository)
     {
         _userRepository = userRepository;
         _jwtConfiguration = jwtConfiguration;
         _permissionRepository = permissionRepository;
+        _personRepository = personRepository;
     }
 
     public async Task<TokenJwtResponse> Handle(TokenJwtGenerateQuery request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.FindById(request.UserId)
-                   ?? throw new UserNotFoundException(request.UserId);
+                   ?? throw new UserNotFoundException(request.UserId);     
+        
+        var person = await _personRepository.FindById(request.UserId)
+                   ?? throw new PersonNotFoundException();
 
         var permissions = await _permissionRepository.FindByUser(request.UserId)
             ?? throw new UserNotFoundException(request.UserId);
@@ -37,6 +43,7 @@ public class TokenJwtGenerateQueryHandler : IQueryHandler<TokenJwtGenerateQuery,
         var claims = new List<Claim>
         {
             new( JwtRegisteredClaimNames.Sub, user.Id.ToString() ),
+            new( JwtRegisteredClaimNames.Name, person.FullName ),
             new( JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString() )
         };
 
