@@ -3,6 +3,7 @@ using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Entities.Audit;
 using DataPoints.Domain.Entities.Main;
+using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Repositories.Audit;
 using DataPoints.Domain.Repositories.Main;
 
@@ -27,18 +28,16 @@ public class WalletInsertCommandHandler : ICommandHandler<WalletInsertCommand>
     {
         if(!await _userRepository.Exists(request.IdUser))
             throw new UserNotFoundException(request.IdUser);
-        
-        using var rsa = new RSACryptoServiceProvider(2048);
-        var chavePublica = rsa.ExportParameters(false);
 
-        byte[] chavePublicaBytes = chavePublica.Modulus!;
+        var groupOfKeys = SecurityHelper.CreateRsaKeys();
 
-        string chavePublicaBase64 = Convert.ToBase64String(chavePublicaBytes);
+        var walletHash = SecurityHelper.CreateSha256Key(groupOfKeys.PublicKey);
 
         var wallet = new WalletEntity
         {
             IdUser = request.IdUser,
-            PublicKey = chavePublicaBase64,
+            HashWallet = walletHash.Hash,
+            PublicKey = groupOfKeys.PublicKey,
         };
         
         await _walletRepository.Add(wallet, request.LoggedPerson.Name, cancellationToken);
