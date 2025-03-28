@@ -55,31 +55,19 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
             throw new ReceiverWalletIsUnavailableException();
 
         var walletsId = new Dictionary<WalletType, WalletEntity>
-            { 
-                { WalletType.Receiver, receiver }, 
-                { WalletType.Sender, sender } 
-            };
+        {
+            { WalletType.Receiver, receiver },
+            { WalletType.Sender, sender }
+        };
 
         await UpdateWallets(walletsId, request.LoggedPerson, cancellationToken);
 
         if (_senderWalletAmount < request.Amount)
             throw new InsufficientBalanceException();
 
-        var senderTransaction = new WalletTransactionEntity
-        {
-            Amount = request.Amount,
-            IsCredit = true,
-            IdWalletFrom = sender.Id,
-            IdWalletTo = receiver.Id,
-        };
+        var senderTransaction = CreateTransaction(request.Amount, sender.Id, receiver.Id, TransactionType.Credited);
 
-        var receiverTransaction = new WalletTransactionEntity
-        {
-            Amount = request.Amount * -1,
-            IsCredit = false,
-            IdWalletFrom = receiver.Id,
-            IdWalletTo = sender.Id,
-        };
+        var receiverTransaction = CreateTransaction(request.Amount, receiver.Id, sender.Id, TransactionType.Debited);
 
         await _walletTransactionRepository.Add(senderTransaction, request.LoggedPerson.Name, cancellationToken);
         await _walletTransactionRepository.Add(receiverTransaction, request.LoggedPerson.Name, cancellationToken);
@@ -110,4 +98,13 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
                 await _sender.Send(new WalletBalanceUpdateCommand(wallet.Id, loggedPerson), cancellationToken);
         }
     }
+
+    private static WalletTransactionEntity CreateTransaction(decimal amount, Guid senderId, Guid receiverId,
+        TransactionType type) => new()
+    {
+        Amount = type is TransactionType.Credited ? amount : amount * -1,
+        IsCredit = type is TransactionType.Credited,
+        IdWalletFrom = receiverId,
+        IdWalletTo = senderId,
+    };
 }
