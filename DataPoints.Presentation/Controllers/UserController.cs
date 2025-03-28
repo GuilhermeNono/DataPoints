@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DataPoints.Presentation.Controllers;
 
-[Route("api/users")]
+[ApiRoute("users")]
 public class UserController : ApiController
 {
     public UserController(ISender sender, ILogger<UserController> logger) : base(sender, logger)

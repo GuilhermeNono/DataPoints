@@ -7,4 +7,5 @@ public interface IWalletTransactionRepository : ICrudRepository<WalletTransactio
 {
     Task<decimal> FindAmountByWallet(Guid walletId);
     Task<IEnumerable<WalletTransactionEntity>> FindByIdBlock(Guid blockId);
+    Task<IEnumerable<WalletTransactionEntity>> FindByBlockId(Guid blockHash);
 }

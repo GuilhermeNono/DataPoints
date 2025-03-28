@@ -1,5 +1,8 @@
 using DataPoints.Application.Members.Commands.Transaction.Insert;
+using DataPoints.Application.Members.Queries.Transaction.ByHash;
 using DataPoints.Contract.Controller.Transaction.Insert.Request;
+using DataPoints.Contract.Transaction.ByHash;
+using DataPoints.Contract.Transaction.Insert;
 using DataPoints.Domain.Annotations;
 using DataPoints.Domain.Enums;
 using DataPoints.Domain.Interfaces;
@@ -10,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DataPoints.Presentation.Controllers;
 
-[Route("api/transactions")]
+[ApiRoute("transactions")]
 public class TransactionController : ApiController
 {
     public TransactionController(ISender sender, ILogger<IController> logger) : base(sender, logger)
@@ -19,10 +22,17 @@ public class TransactionController : ApiController
 
     [Protected(RoleProfile.User)]
     [HttpPost]
-    public async Task<IActionResult> InsertNewTransactionAsync([FromBody] TransactionInsertRequest request)
+    public async Task<ActionResult<TransactionInsertResponse>> InsertNewTransactionAsync([FromBody] TransactionInsertRequest request)
     {
         var transaction = await Sender.Send(new TransactionInsertCommand(request.ReceiverPublicKey, request.Amount, LoggedPerson));
         
-        return Created($"api/transactions/{transaction.TransactionId}", transaction);
+        return Created($"api/transactions/{transaction.BlockId}", transaction);
+    }
+    
+    [Protected(RoleProfile.User)]
+    [HttpGet("{transactionHash}")]
+    public async Task<ActionResult<IEnumerable<TransactionTreeResponse>>> GetTransactionTreeAsync(Guid transactionHash)
+    {
+        return Ok(await Sender.Send(new TransactionGetByBlockHashQuery(transactionHash)));
     }
 }

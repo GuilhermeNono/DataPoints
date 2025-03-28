@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using DataPoints.Api.Extensions;
 using DataPoints.Api.Middlewares;
 using DataPoints.Application;
@@ -18,7 +20,13 @@ builder.Services.AddControllers(opt =>
     {
         opt.Filters.Add<ExceptionHandler>();
     })
-    .AddApplicationPart(typeof(ApiController).Assembly);
+    .AddApplicationPart(typeof(ApiController).Assembly)
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

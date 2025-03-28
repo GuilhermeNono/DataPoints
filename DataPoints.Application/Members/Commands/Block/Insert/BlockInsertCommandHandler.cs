@@ -10,7 +10,7 @@ using MediatR;
 
 namespace DataPoints.Application.Members.Commands.Block.Insert;
 
-public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, string>
+public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, Guid>
 {
     private readonly IBlockRepository _blockRepository;
     private readonly IWalletTransactionRepository _walletTransactionRepository;
@@ -24,7 +24,7 @@ public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, str
         _sender = sender;
     }
 
-    public async Task<string> Handle(BlockInsertCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(BlockInsertCommand request, CancellationToken cancellationToken)
     {
         var lastBlock = await _blockRepository.FindLastBlock()
                         ?? throw new LastBlockNotFoundException();
@@ -66,6 +66,6 @@ public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, str
             await _walletTransactionRepository.Update(transaction, request.LoggedPerson.Name, cancellationToken);
         }
 
-        return newBlock.Hash;
+        return newBlock.Id;
     }
 }

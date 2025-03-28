@@ -87,5 +87,7 @@ public static class ErrorMessage
             $"Não foi possivel encontrar as transações do bloco {blockId}.";
 
         public static string CheckpointsNotFoundFromThisBatch() => "Não foi possivel encontrar checkpoints com esse Id de validação.";
+
+        public static string DescriptionAttributeNotFound() => "Não foi possivel encontrar a anotação [Description].";
     }
 }

@@ -11,4 +11,8 @@
       <Folder Include="Controller\Transaction\Insert\Response\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\DataPoints.Domain\DataPoints.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

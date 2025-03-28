@@ -9,6 +9,7 @@ using DataPoints.Contract.Controller.Authentication.SignIn.Responses;
 using DataPoints.Contract.Controller.Authentication.SignUp.Requests;
 using DataPoints.Contract.Controller.Authentication.SignUp.Responses;
 using DataPoints.Domain.Annotations;
+using DataPoints.Domain.Enums;
 using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Interfaces;
 using DataPoints.Presentation.Controllers.Abstractions;
@@ -19,7 +20,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DataPoints.Presentation.Controllers;
 
-[Route("v1/auth")]
+[ApiRoute("auth")]
 public class AuthenticationController : ApiController
 {
     public AuthenticationController(ISender sender, ILogger<IController> logger) : base(sender, logger)
