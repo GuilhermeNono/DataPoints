@@ -8,6 +8,7 @@ public class WalletEntity : AuditableStatefulEntity<Guid>
 {
     public Guid IdUser { get; set; }
     public string PublicKey { get; set; } = string.Empty;
+    public string HashWallet { get; set; } = string.Empty;
     public decimal Balance { get; set; }
     public bool IsBlocked { get; set; }
 }
