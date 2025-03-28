@@ -24,7 +24,7 @@ public class TransactionController : ApiController
     [HttpPost]
     public async Task<ActionResult<TransactionInsertResponse>> InsertNewTransactionAsync([FromBody] TransactionInsertRequest request)
     {
-        var transaction = await Sender.Send(new TransactionInsertCommand(request.ReceiverPublicKey, request.Amount, LoggedPerson));
+        var transaction = await Sender.Send(new TransactionInsertCommand(request.ReceiverWallet, request.Amount, LoggedPerson));
         
         return Created($"api/transactions/{transaction.BlockId}", transaction);
     }

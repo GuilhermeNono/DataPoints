@@ -89,5 +89,7 @@ public static class ErrorMessage
         public static string CheckpointsNotFoundFromThisBatch() => "Não foi possivel encontrar checkpoints com esse Id de validação.";
 
         public static string DescriptionAttributeNotFound() => "Não foi possivel encontrar a anotação [Description].";
+
+        public static string WalletHashNotFound(string hash) => $"Não foi possivel encontrar uma carteira de codigo {hash}.";
     }
 }

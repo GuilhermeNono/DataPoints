@@ -39,8 +39,8 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
         if (request.LoggedPerson.Id is null)
             throw new LoggedPersonNotFoundException();
 
-        var receiver = await _walletRepository.FindByPublicKey(request.ReceiverPublicKey)
-                       ?? throw new WalletPublicKeyNotFoundException(request.ReceiverPublicKey);
+        var receiver = await _walletRepository.FindByHash(request.ReceiverWallet)
+                       ?? throw new WalletHashNotFoundException(request.ReceiverWallet);
 
         var sender = await _walletRepository.FindByUser(request.LoggedPerson.Id.GetValueOrDefault())
                      ?? throw new WalletUserNotFoundException(request.LoggedPerson.Id.GetValueOrDefault());
