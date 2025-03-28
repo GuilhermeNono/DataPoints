@@ -26,6 +26,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DataPoints.Application\DataPoints.Application.csproj" />
+      <ProjectReference Include="..\DataPoints.Crosscutting.Mapper\DataPoints.Crosscutting.Mapper.csproj" />
       <ProjectReference Include="..\DataPoints.Infrastructure\DataPoints.Infrastructure.csproj" />
       <ProjectReference Include="..\DataPoints.Presentation\DataPoints.Presentation.csproj" />
     </ItemGroup>

@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DataPoints.Contract\DataPoints.Contract.csproj" />
+      <ProjectReference Include="..\DataPoints.Crosscutting.Mapper\DataPoints.Crosscutting.Mapper.csproj" />
       <ProjectReference Include="..\DataPoints.Crosscutting\DataPoints.Crosscutting.csproj" />
       <ProjectReference Include="..\DataPoints.Domain\DataPoints.Domain.csproj" />
     </ItemGroup>

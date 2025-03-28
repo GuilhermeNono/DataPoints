@@ -2,6 +2,7 @@
 using DataPoints.Contract.Transaction.ByHash;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Person;
+using DataPoints.Crosscutting.Mapper.Responses;
 using DataPoints.Domain.Enums;
 using DataPoints.Domain.Repositories.Main;
 
@@ -44,27 +45,7 @@ public class
             var userTo = await _personRepository.FindById(walletTo.IdUser)
                          ?? throw new PersonNotFoundException();
 
-            var transactionType = transaction.IsCredit ? TransactionType.Credited : TransactionType.Debited;
-            
-            var from = new TransactionDelivererResponse()
-            {
-                Id = userFrom.Id,
-                Name = userFrom.FullName
-            };
-
-            var to = new TransactionDelivererResponse()
-            {
-                Id = userTo.Id,
-                Name = userTo.FullName
-            };
-
-            result.Add(new TransactionTreeResponse
-            {
-                To = transactionType is TransactionType.Credited ? to : null,
-                From = transactionType is TransactionType.Credited ? from : to,
-                Amount = transaction.Amount,
-                Type = transactionType
-            });
+            result.Add(transaction.Map(userTo, userFrom));
         }
 
         return result;
