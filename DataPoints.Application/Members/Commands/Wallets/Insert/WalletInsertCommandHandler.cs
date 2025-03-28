@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using DataPoints.Application.Members.Abstractions.Commands;
+using DataPoints.Contract.Wallet.Private;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Entities.Audit;
 using DataPoints.Domain.Entities.Main;
@@ -9,7 +10,7 @@ using DataPoints.Domain.Repositories.Main;
 
 namespace DataPoints.Application.Members.Commands.Wallets.Insert;
 
-public class WalletInsertCommandHandler : ICommandHandler<WalletInsertCommand>
+public class WalletInsertCommandHandler : ICommandHandler<WalletInsertCommand, WalletPrivateKeyResponse>
 {
     
     private readonly IWalletRepository _walletRepository;
@@ -24,7 +25,7 @@ public class WalletInsertCommandHandler : ICommandHandler<WalletInsertCommand>
         _userRepository = userRepository;
     }
 
-    public async Task Handle(WalletInsertCommand request, CancellationToken cancellationToken)
+    public async Task<WalletPrivateKeyResponse> Handle(WalletInsertCommand request, CancellationToken cancellationToken)
     {
         if(!await _userRepository.Exists(request.IdUser))
             throw new UserNotFoundException(request.IdUser);
@@ -36,11 +37,13 @@ public class WalletInsertCommandHandler : ICommandHandler<WalletInsertCommand>
         var wallet = new WalletEntity
         {
             IdUser = request.IdUser,
-            HashWallet = walletHash.Hash,
+            Hash = walletHash.Hash,
             PublicKey = groupOfKeys.PublicKey,
         };
         
         await _walletRepository.Add(wallet, request.LoggedPerson.Name, cancellationToken);
         await _walletLogRepository.Add(new WalletLogEntity(wallet), request.LoggedPerson.Name, cancellationToken);
+
+        return new WalletPrivateKeyResponse(groupOfKeys.PrivateKey);
     }
 }

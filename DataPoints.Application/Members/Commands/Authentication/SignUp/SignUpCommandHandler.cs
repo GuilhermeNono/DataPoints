@@ -2,6 +2,7 @@
 using DataPoints.Application.Members.Commands.Profile.Role;
 using DataPoints.Application.Members.Commands.Wallets.Insert;
 using DataPoints.Contract.Controller.Authentication.SignUp.Responses;
+using DataPoints.Contract.Wallet.Private.Single;
 using DataPoints.Crosscutting.Exceptions.Http.BadRequest;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Entities.Audit;
@@ -86,9 +87,12 @@ public class SignUpCommandHandler : ICommandHandler<SignUpCommand, SignUpRespons
 
         await _sender.Send(new ProfileInsertRoleCommand(user.Id, RoleHelper.User, request.LoggedPerson), cancellationToken);
 
-        await _sender.Send(new WalletInsertCommand(user.Id, request.LoggedPerson), cancellationToken);
+        var walletResponse = await _sender.Send(new WalletInsertCommand(user.Id, request.LoggedPerson), cancellationToken);
 
-        return new SignUpResponse(user.Id);
+        return new SignUpResponse(user.Id, new WalletSinglePrivateInfoResponse
+        {
+            Key = walletResponse.PrivateKey
+        });
     }
 
     private static void DocumentValidations(DocumentHelper document)

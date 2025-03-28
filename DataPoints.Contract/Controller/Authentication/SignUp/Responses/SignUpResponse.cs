@@ -1,6 +1,8 @@
-﻿namespace DataPoints.Contract.Controller.Authentication.SignUp.Responses;
+﻿using DataPoints.Contract.Wallet.Private.Single;
 
-public record SignUpResponse(Guid Id)
+namespace DataPoints.Contract.Controller.Authentication.SignUp.Responses;
+
+public record SignUpResponse(Guid Id, WalletSinglePrivateInfoResponse PrivateInfo)
 {
     
 }

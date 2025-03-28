@@ -1,7 +1,7 @@
 ﻿Create table Ath_Users
 (
     Id               bigint           not null
-        constraint PK_User primary key identity ,
+        constraint PK_User primary key identity,
     IdUser           uniqueidentifier not null,
     Email            varchar(120)     not null,
     IsEmailConfirmed bit              not null,
@@ -51,7 +51,7 @@ CREATE TABLE Wlt_Wallets
     IdWallet     uniqueidentifier not null,
     IdUser       uniqueidentifier not null,
     PublicKey    varchar(800)     not null,
-    Balance      Decimal(18, 8)   not null,
+    Hash         varchar(255)     not null,
     IsBlocked    Bit              not null,
     IsActive     Bit              not null,
     Operation    char(1)          not null,
