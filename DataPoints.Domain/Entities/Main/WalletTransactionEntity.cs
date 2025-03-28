@@ -10,7 +10,7 @@ public class WalletTransactionEntity : AuditableEntity<Guid>
     public Guid IdWalletTo { get; set; }
     public decimal Amount { get; set; }
     public bool IsCredit { get; set; }
-    public bool IsBlocked { get; set; }
+    public bool IsBlocked { get; set; } = false;
     public Guid? IdBlock { get; set; }
 
     public string TransactionSerialized => $"I={Id}|F={IdWalletFrom}|T={IdWalletTo}|A=${Amount}|C={IsCredit}";

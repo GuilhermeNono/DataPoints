@@ -28,25 +28,10 @@ public class WalletBalanceUpdateCommandHandler : ICommandHandler<WalletBalanceUp
 
         var newBalance = await _walletTransaction.FindAmountByWallet(request.WalletId);
 
-        if (newBalance < 0)
-        {
-            wallet.IsBlocked = true;
-            
-            await UpdateWallet(wallet, request.LoggedPerson.Name, cancellationToken);
-            
-            throw new ProhibitedBalanceAmountException(newBalance);
-        }
+        if (newBalance >= 0) return newBalance;
         
-        wallet.Balance = newBalance;
-
-        await UpdateWallet(wallet, request.LoggedPerson.Name, cancellationToken);
-        
-        return wallet.Balance; 
-    }
-
-    private async Task UpdateWallet(WalletEntity wallet, string loggedPersonName, CancellationToken cancellationToken)
-    {
-        await _wallet.Update(wallet, loggedPersonName, cancellationToken);
-        await _walletLog.Update(new WalletLogEntity(wallet), loggedPersonName, cancellationToken);
+        wallet.IsBlocked = true;
+            
+        throw new ProhibitedBalanceAmountException(newBalance);
     }
 }

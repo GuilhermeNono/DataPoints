@@ -9,6 +9,7 @@ using DataPoints.Crosscutting.Exceptions.Http.NotFound;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Wallet;
 using DataPoints.Domain.Database.Queries.Base;
 using DataPoints.Domain.Entities.Main;
+using DataPoints.Domain.Enums;
 using DataPoints.Domain.Objects;
 using DataPoints.Domain.Repositories.Main;
 using MediatR;
@@ -20,6 +21,9 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
     private readonly ISender _sender;
     private readonly IWalletRepository _walletRepository;
     private readonly IWalletTransactionRepository _walletTransactionRepository;
+
+    private decimal _senderWalletAmount = decimal.Zero;
+    private decimal _receiverWalletAmount = decimal.Zero;
 
     public TransactionInsertCommandHandler(ISender sender, IWalletRepository walletRepository,
         IWalletTransactionRepository walletTransactionRepository)
@@ -50,11 +54,15 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
         if (receiver.IsBlocked || !receiver.IsActive)
             throw new ReceiverWalletIsUnavailableException();
 
-        var walletsId = new List<WalletEntity> { receiver, sender };
+        var walletsId = new Dictionary<WalletType, WalletEntity>
+            { 
+                { WalletType.Receiver, receiver }, 
+                { WalletType.Sender, sender } 
+            };
 
-        await UpdateWalletBalance(walletsId, request.LoggedPerson, cancellationToken);
-        
-        if (sender.Balance < request.Amount)
+        await UpdateWallets(walletsId, request.LoggedPerson, cancellationToken);
+
+        if (_senderWalletAmount < request.Amount)
             throw new InsufficientBalanceException();
 
         var senderTransaction = new WalletTransactionEntity
@@ -76,7 +84,7 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
         await _walletTransactionRepository.Add(senderTransaction, request.LoggedPerson.Name, cancellationToken);
         await _walletTransactionRepository.Add(receiverTransaction, request.LoggedPerson.Name, cancellationToken);
 
-        await UpdateWalletBalance(walletsId, request.LoggedPerson, cancellationToken);
+        await UpdateWallets(walletsId, request.LoggedPerson, cancellationToken);
 
         var blockHash =
             await _sender.Send(
@@ -86,10 +94,20 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
         return new TransactionInsertResponse(blockHash, DateTime.Now);
     }
 
-    private async Task UpdateWalletBalance(IList<WalletEntity> wallets, LoggedPerson loggedPerson,
+    private async Task UpdateWallets(Dictionary<WalletType, WalletEntity> wallets, LoggedPerson loggedPerson,
         CancellationToken cancellationToken)
     {
-        foreach (var wallet in wallets)
-            wallet.Balance = await _sender.Send(new WalletBalanceUpdateCommand(wallet.Id, loggedPerson), cancellationToken);
+        foreach (var (type, wallet) in wallets)
+        {
+            if (type is WalletType.Receiver)
+            {
+                _receiverWalletAmount = await _sender.Send(new WalletBalanceUpdateCommand(wallet.Id, loggedPerson),
+                    cancellationToken);
+                continue;
+            }
+
+            _senderWalletAmount =
+                await _sender.Send(new WalletBalanceUpdateCommand(wallet.Id, loggedPerson), cancellationToken);
+        }
     }
 }

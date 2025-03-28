@@ -20,7 +20,6 @@ public class WalletLogEntity : WalletEntity, IEntityLog
         IdUser = entity.IdUser;
         PublicKey = entity.PublicKey;
         HashWallet = entity.HashWallet;
-        Balance = entity.Balance;
         IsBlocked = entity.IsBlocked;
         IsActive = entity.IsActive;
     }
