@@ -37,16 +37,18 @@ public class BlockValidateCommandHandler : ICommandHandler<BlockValidateCommand,
             MerkleTree.ComputeRoot(blockTransactions.Select(x => x.TransactionSerialized).ToList());
 
         var calculateHash = BlockHelper.CalculateHash(block);
-            
+
+        if (!BlockHelper.IsValidBlockSignature(calculateHash, block.BlockSignature, block.PublicKey))
+            return BlockValidationResponse.Invalid();
+        
         var merkleRootIsCorrupted = !block.Hash.Equals(GenesisBlock, StringComparison.CurrentCultureIgnoreCase) &&
                                     !calculateMerkleRootFromBlock.Equals(block.MerkleRoot,
                                         StringComparison.CurrentCultureIgnoreCase);
         
-        var hashIsCorrupted = !calculateHash.Equals(block.Hash, StringComparison.CurrentCultureIgnoreCase);
+        var hashIsCorrupted = !calculateHash.Equals(block.Hash, StringComparison.CurrentCultureIgnoreCase); 
+
+        if (!merkleRootIsCorrupted && !hashIsCorrupted) return new BlockValidationResponse(block.IsValid);
         
-
-        if (!merkleRootIsCorrupted || !hashIsCorrupted) return new BlockValidationResponse(block.IsValid);
-
         block.IsValid = false;
         await _blockRepository.Update(block, request.LoggedPerson.Name, cancellationToken);
 

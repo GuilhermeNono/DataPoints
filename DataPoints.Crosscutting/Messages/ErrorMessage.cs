@@ -91,5 +91,8 @@ public static class ErrorMessage
         public static string DescriptionAttributeNotFound() => "Não foi possivel encontrar a anotação [Description].";
 
         public static string WalletHashNotFound(string hash) => $"Não foi possivel encontrar uma carteira de codigo {hash}.";
+
+        public static string SignatureIsInvalid() =>
+            "Não foi possivel completar uma transação com a assinatura informada.";
     }
 }

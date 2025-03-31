@@ -1,6 +1,7 @@
 ﻿using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Application.Members.Commands.Block.Checkpoint.Clean;
 using DataPoints.Application.Members.Commands.Block.Validate;
+using DataPoints.Application.Members.Commands.Transaction.Invalidate;
 using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Enums.Entities;
 using DataPoints.Domain.Repositories.Main;
@@ -59,13 +60,14 @@ public class BlockValidateCheckpointCommandHandler : ICommandHandler<BlockValida
                 IdBlock = block.Id
             }, request.LoggedPerson.Name, cancellationToken);
 
-
             if (!blockValidated.IsValid)
             {
                 InvalidateBlock(latestValidation);
-
+                
                 blockCheckpoint.IsValid = false;
                 await _batchCheckpointRepository.Update(blockCheckpoint, request.LoggedPerson.Name, cancellationToken);
+
+                await _sender.Send(new TransactionInvalidateCommand(block.Id, request.LoggedPerson), cancellationToken);
                 continue;
             }
 

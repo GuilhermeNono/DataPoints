@@ -6,11 +6,14 @@ using DataPoints.Crosscutting.Exceptions.Http.BadRequest;
 using DataPoints.Crosscutting.Exceptions.Http.Conflict;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
+using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Wallet;
 using DataPoints.Domain.Database.Queries.Base;
 using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Enums;
+using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Objects;
+using DataPoints.Domain.Objects.Security;
 using DataPoints.Domain.Repositories.Main;
 using MediatR;
 
@@ -38,13 +41,19 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
     {
         if (request.LoggedPerson.Id is null)
             throw new LoggedPersonNotFoundException();
-
+        
+        if(!SecurityHelper.IsValidPrivateKey(request.Signature))
+            throw new SignatureIsInvalidException();
+        
         var receiver = await _walletRepository.FindByHash(request.ReceiverWallet)
                        ?? throw new WalletHashNotFoundException(request.ReceiverWallet);
 
         var sender = await _walletRepository.FindByUser(request.LoggedPerson.Id.GetValueOrDefault())
                      ?? throw new WalletUserNotFoundException(request.LoggedPerson.Id.GetValueOrDefault());
 
+        if (!SecurityHelper.IsKeyPairValid(sender.PublicKey, request.Signature))
+            throw new SignatureIsInvalidException();
+        
         if (receiver.Id == sender.Id)
             throw new TransactionForYourselfException();
 
@@ -66,7 +75,6 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
             throw new InsufficientBalanceException();
 
         var senderTransaction = CreateTransaction(request.Amount, sender.Id, receiver.Id, TransactionType.Credited);
-
         var receiverTransaction = CreateTransaction(request.Amount, receiver.Id, sender.Id, TransactionType.Debited);
 
         await _walletTransactionRepository.Add(senderTransaction, request.LoggedPerson.Name, cancellationToken);
@@ -74,9 +82,11 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
 
         await UpdateWallets(walletsId, request.LoggedPerson, cancellationToken);
 
+        var groupKeys = new SecurityGroupKey(sender.PublicKey, request.Signature);
+
         var blockHash =
             await _sender.Send(
-                new BlockInsertCommand([senderTransaction.Id, receiverTransaction.Id], request.LoggedPerson),
+                new BlockInsertCommand([senderTransaction.Id, receiverTransaction.Id], groupKeys, request.LoggedPerson),
                 cancellationToken);
 
         return new TransactionInsertResponse(blockHash, DateTime.Now);
@@ -104,7 +114,7 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
     {
         Amount = type is TransactionType.Credited ? amount : amount * -1,
         IsCredit = type is TransactionType.Credited,
-        IdWalletFrom = receiverId,
-        IdWalletTo = senderId,
+        IdWalletFrom = type is TransactionType.Credited ? senderId : receiverId,
+        IdWalletTo = type is TransactionType.Credited ? receiverId : senderId,
     };
 }

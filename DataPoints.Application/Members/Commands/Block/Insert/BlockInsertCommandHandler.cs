@@ -55,10 +55,15 @@ public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, Gui
         var merkleRoot = MerkleTree.ComputeRoot(transactions.Select(x => x.TransactionSerialized).ToList());
 
         newBlock.MerkleRoot = merkleRoot;
-
-        newBlock.Hash = BlockHelper.CalculateHash(newBlock);
+        
+        newBlock.PublicKey = request.SecurityKeys.PublicKey;
 
         await _blockRepository.Add(newBlock, request.LoggedPerson.Name, cancellationToken);
+
+        newBlock.Hash = BlockHelper.CalculateHash(newBlock);
+        newBlock.BlockSignature = SecurityHelper.SignTransaction(newBlock.Hash, request.SecurityKeys.PrivateKey);
+        
+        await _blockRepository.Update(newBlock, request.LoggedPerson.Name, cancellationToken);
 
         foreach (var transaction in transactions)
         {

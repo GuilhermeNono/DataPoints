@@ -30,7 +30,7 @@ public class WalletInsertCommandHandler : ICommandHandler<WalletInsertCommand, W
         if(!await _userRepository.Exists(request.IdUser))
             throw new UserNotFoundException(request.IdUser);
 
-        var groupOfKeys = SecurityHelper.CreateRsaKeys();
+        var groupOfKeys = SecurityHelper.CreateEcdsaKeys();
 
         var walletHash = SecurityHelper.CreateSha256Key(groupOfKeys.PublicKey);
 

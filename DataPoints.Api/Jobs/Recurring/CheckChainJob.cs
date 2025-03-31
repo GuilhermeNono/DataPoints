@@ -17,7 +17,6 @@ public class CheckChainJob : IRecurringJob
         _sender = sender;
     }
     
-    [DisableConcurrentExecution(timeoutInSeconds: 10 * 60), AutomaticRetry(Attempts = 0)]
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         await _sender.Send(new BlockValidateCheckpointCommand(LoggedPerson.System()), cancellationToken);

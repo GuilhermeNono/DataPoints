@@ -22,13 +22,15 @@ public class TransactionController : ApiController
 
     [Protected(RoleProfile.User)]
     [HttpPost]
-    public async Task<ActionResult<TransactionInsertResponse>> InsertNewTransactionAsync([FromBody] TransactionInsertRequest request)
+    public async Task<ActionResult<TransactionInsertResponse>> InsertNewTransactionAsync(
+        [FromBody] TransactionInsertRequest request, [FromHeader(Name = "X-Signature")] string signature)
     {
-        var transaction = await Sender.Send(new TransactionInsertCommand(request.ReceiverWallet, request.Amount, LoggedPerson));
-        
+        var transaction =
+            await Sender.Send(new TransactionInsertCommand(request.ReceiverWallet, signature, request.Amount, LoggedPerson));
+
         return Created($"api/transactions/{transaction.BlockId}", transaction);
     }
-    
+
     [Protected(RoleProfile.User)]
     [HttpGet("{transactionHash}")]
     public async Task<ActionResult<IEnumerable<TransactionTreeResponse>>> GetTransactionTreeAsync(Guid transactionHash)

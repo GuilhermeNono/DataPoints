@@ -6,13 +6,15 @@ using DataPoints.Domain.Database.Entity;
 namespace DataPoints.Domain.Entities.Main;
 
 [Table("Blc_Block")]
-public class  BlockEntity : Entity<Guid>
+public class BlockEntity : Entity<Guid>
 {
     public string Hash { get; set; } = string.Empty;
     public string PreviousHash { get; set; }
     public string MerkleRoot { get; set; }
+    public string? BlockSignature { get; set; }
     public bool IsValid { get; set; } = true;
     public DateTime DateInclusion { get; set; } = DateTime.UtcNow;
+    public string PublicKey { get; set; }
 
     public BlockEntity(string previousHash)
     {
@@ -22,5 +24,4 @@ public class  BlockEntity : Entity<Guid>
     public BlockEntity()
     {
     }
-    
 }

@@ -66,7 +66,7 @@ CREATE TABLE Wlt_Wallets
     IdUser       uniqueidentifier not null
         constraint FK_Wallet_User references Ath_Users,
     PublicKey    varchar(800)     not null,
-    Hash   varchar(255)     not null,
+    Hash         varchar(255)     not null,
     IsBlocked    Bit              not null,
     IsActive     Bit              not null,
     Operation    char(1)          not null,
