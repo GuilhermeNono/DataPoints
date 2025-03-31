@@ -1,7 +1,7 @@
 using DataPoints.Application.Members.Abstractions.Queries;
 using DataPoints.Application.Members.Queries.Authentication.Token.Jwt;
 using DataPoints.Application.Members.Queries.Authentication.Token.Refresh;
-using DataPoints.Contract.Controller.Authentication.SignIn.Responses;
+using DataPoints.Contract.Authentication.SignIn.Responses;
 using MediatR;
 
 namespace DataPoints.Application.Members.Queries.Authentication.Token;

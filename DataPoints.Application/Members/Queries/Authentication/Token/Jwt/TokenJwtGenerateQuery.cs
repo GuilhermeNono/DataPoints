@@ -1,5 +1,5 @@
 using DataPoints.Application.Members.Abstractions.Queries;
-using DataPoints.Contract.Token.Jwt.Responses;
+using DataPoints.Contract.Token.Jwt;
 
 namespace DataPoints.Application.Members.Queries.Authentication.Token.Jwt;
 

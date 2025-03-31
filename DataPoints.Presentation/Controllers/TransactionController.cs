@@ -1,8 +1,8 @@
 using DataPoints.Application.Members.Commands.Transaction.Insert;
 using DataPoints.Application.Members.Queries.Transaction.ByHash;
-using DataPoints.Contract.Controller.Transaction.Insert.Request;
 using DataPoints.Contract.Transaction.ByHash;
-using DataPoints.Contract.Transaction.Insert;
+using DataPoints.Contract.Transaction.Insert.Request;
+using DataPoints.Contract.Transaction.Insert.Response;
 using DataPoints.Domain.Annotations;
 using DataPoints.Domain.Enums;
 using DataPoints.Domain.Interfaces;

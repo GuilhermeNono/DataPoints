@@ -2,6 +2,7 @@ using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Application.Members.Commands.Block.Insert;
 using DataPoints.Application.Members.Commands.Wallets.Balance.Update;
 using DataPoints.Contract.Transaction.Insert;
+using DataPoints.Contract.Transaction.Insert.Response;
 using DataPoints.Crosscutting.Exceptions.Http.BadRequest;
 using DataPoints.Crosscutting.Exceptions.Http.Conflict;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;

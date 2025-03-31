@@ -1,5 +1,5 @@
 using DataPoints.Application.Members.Abstractions.Queries;
-using DataPoints.Contract.Controller.Users.Responses;
+using DataPoints.Contract.Users.Responses;
 
 namespace DataPoints.Application.Members.Queries.User.GetById;
 

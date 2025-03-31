@@ -1,6 +1,8 @@
-﻿using DataPoints.Application.Members.Queries.User.GetById;
-using DataPoints.Contract.Controller.Users.Responses;
+﻿using DataPoints.Application.Members.Queries.User.GetByDocument;
+using DataPoints.Application.Members.Queries.User.GetById;
+using DataPoints.Contract.Users.Responses;
 using DataPoints.Domain.Annotations;
+using DataPoints.Domain.CustomQuery;
 using DataPoints.Domain.Enums;
 using DataPoints.Presentation.Controllers.Abstractions;
 using MediatR;
@@ -23,5 +25,10 @@ public class UserController : ApiController
         return Ok(await Sender.Send(new UserGetByIdQuery(id)));
     }
     
-    
+    [Protected(RoleProfile.User)]
+    [HttpGet("documents/{document}")]
+    public async Task<ActionResult<UserInfoQueryResponse>> GetUserByDocumentAsync(string document)
+    {
+        return Ok(await Sender.Send(new UserGetByDocumentQuery(document)));
+    }
 }

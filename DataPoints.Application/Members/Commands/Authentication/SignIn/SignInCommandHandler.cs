@@ -1,7 +1,7 @@
 using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Application.Members.Queries.Authentication.Password;
 using DataPoints.Application.Members.Queries.Authentication.Token;
-using DataPoints.Contract.Controller.Authentication.SignIn.Responses;
+using DataPoints.Contract.Authentication.SignIn.Responses;
 using DataPoints.Crosscutting.Exceptions.Http.Unauthorized;
 using DataPoints.Domain.Repositories.Main;
 using MediatR;

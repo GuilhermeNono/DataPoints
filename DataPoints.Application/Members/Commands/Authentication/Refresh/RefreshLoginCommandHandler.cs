@@ -2,7 +2,7 @@ using System.Security;
 using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Application.Members.Queries.Authentication.Token;
 using DataPoints.Application.Members.Queries.Generate.Logged;
-using DataPoints.Contract.Controller.Authentication.SignIn.Responses;
+using DataPoints.Contract.Authentication.SignIn.Responses;
 using DataPoints.Crosscutting.Exceptions.Http.Unauthorized;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Authentication;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;

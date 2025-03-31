@@ -1,7 +1,7 @@
 ﻿using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Application.Members.Commands.Profile.Role;
 using DataPoints.Application.Members.Commands.Wallets.Insert;
-using DataPoints.Contract.Controller.Authentication.SignUp.Responses;
+using DataPoints.Contract.Authentication.SignUp.Responses;
 using DataPoints.Contract.Wallet.Private.Single;
 using DataPoints.Crosscutting.Exceptions.Http.BadRequest;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;

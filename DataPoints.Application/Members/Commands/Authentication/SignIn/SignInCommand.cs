@@ -1,6 +1,6 @@
 using DataPoints.Application.Members.Abstractions.Commands;
-using DataPoints.Contract.Controller.Authentication.SignIn.Requests;
-using DataPoints.Contract.Controller.Authentication.SignIn.Responses;
+using DataPoints.Contract.Authentication.SignIn.Requests;
+using DataPoints.Contract.Authentication.SignIn.Responses;
 using DataPoints.Domain.Objects;
 using MediatR;
 

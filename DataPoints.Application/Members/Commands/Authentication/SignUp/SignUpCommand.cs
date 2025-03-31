@@ -1,6 +1,6 @@
 ﻿using DataPoints.Application.Members.Abstractions.Commands;
-using DataPoints.Contract.Controller.Authentication.SignUp.Requests;
-using DataPoints.Contract.Controller.Authentication.SignUp.Responses;
+using DataPoints.Contract.Authentication.SignUp.Requests;
+using DataPoints.Contract.Authentication.SignUp.Responses;
 using DataPoints.Domain.Objects;
 
 namespace DataPoints.Application.Members.Commands.Authentication.SignUp;

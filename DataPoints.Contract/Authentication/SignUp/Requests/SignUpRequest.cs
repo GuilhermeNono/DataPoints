@@ -1,4 +1,4 @@
-﻿namespace DataPoints.Contract.Controller.Authentication.SignUp.Requests;
+﻿namespace DataPoints.Contract.Authentication.SignUp.Requests;
 
 public record SignUpRequest(
     string FirstName,

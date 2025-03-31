@@ -1,5 +1,5 @@
 using DataPoints.Application.Members.Abstractions.Queries;
-using DataPoints.Contract.Controller.Users.Responses;
+using DataPoints.Contract.Users.Responses;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Repositories.Main;

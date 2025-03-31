@@ -1,6 +1,6 @@
 using DataPoints.Application.Members.Abstractions.Commands;
-using DataPoints.Contract.Controller.Authentication.Refresh;
-using DataPoints.Contract.Controller.Authentication.SignIn.Responses;
+using DataPoints.Contract.Authentication.Refresh;
+using DataPoints.Contract.Authentication.SignIn.Responses;
 
 namespace DataPoints.Application.Members.Commands.Authentication.Refresh;
 

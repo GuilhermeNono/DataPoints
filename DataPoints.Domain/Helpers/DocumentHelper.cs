@@ -104,4 +104,9 @@ public class DocumentHelper
         return firstDigit == int.Parse(documentNumberNormalized[12].ToString()) &&
                secondDigit == int.Parse(documentNumberNormalized[13].ToString());
     }
+
+    public static object MaskCpf(string trim)
+    {
+        throw new NotImplementedException();
+    }
 }

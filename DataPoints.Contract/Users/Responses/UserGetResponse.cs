@@ -1,4 +1,4 @@
-﻿namespace DataPoints.Contract.Controller.Users.Responses;
+﻿namespace DataPoints.Contract.Users.Responses;
 
 public class UserGetResponse
 {

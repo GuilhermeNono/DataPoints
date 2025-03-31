@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using DataPoints.Application.Members.Abstractions.Queries;
-using DataPoints.Contract.Token.Jwt.Responses;
+using DataPoints.Contract.Token.Jwt;
 using DataPoints.Crosscutting.Configurations;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Person;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
