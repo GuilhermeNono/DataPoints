@@ -28,13 +28,13 @@ public class TransactionController : ApiController
         var transaction =
             await Sender.Send(new TransactionInsertCommand(request.ReceiverWallet, signature, request.Amount, LoggedPerson));
 
-        return Created($"api/transactions/{transaction.BlockId}", transaction);
+        return Created($"api/transactions/{transaction.Id}", transaction);
     }
 
     [Protected(RoleProfile.User)]
-    [HttpGet("{transactionHash}")]
-    public async Task<ActionResult<IEnumerable<TransactionTreeResponse>>> GetTransactionTreeAsync(Guid transactionHash)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<IEnumerable<TransactionTreeResponse>>> GetTransactionTreeAsync(Guid id)
     {
-        return Ok(await Sender.Send(new TransactionGetByBlockHashQuery(transactionHash)));
+        return Ok(await Sender.Send(new TransactionGetByBlockHashQuery(id)));
     }
 }
