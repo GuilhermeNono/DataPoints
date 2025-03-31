@@ -11,6 +11,7 @@ The goal of this project is to provide a secure and transparent system for distr
 - **C#**
 - **.NET 8**
 - **DbUp**
+- **NBitcoin**
 - **Entity Framework (EF)**
 
 ## Features
