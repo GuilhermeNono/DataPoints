@@ -1,6 +1,7 @@
 using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
+using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Wallet;
 using DataPoints.Domain.Entities.Audit;
 using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Repositories.Audit;

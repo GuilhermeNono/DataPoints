@@ -8,4 +8,5 @@ public interface IWalletRepository : ICrudRepository<WalletEntity, Guid>
     Task<WalletEntity?> FindByPublicKey(string publicKey);
     Task<WalletEntity?> FindByHash(string hash);
     Task<WalletEntity?> FindByUser(Guid userId);
+    Task<decimal> FindBalanceByUser(Guid personId);
 }

@@ -1,10 +1,10 @@
-﻿using DataPoints.Contract.Users.Responses;
-using DataPoints.Domain.CustomQuery;
+﻿using DataPoints.Domain.CustomQuery;
 using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Repositories.Main;
 using DataPoints.Infrastructure.EFCore.Abstractions;
 using DataPoints.Infrastructure.EFCore.Database.Context;
 using DataPoints.Infrastructure.Persistence.Main.Person.Queries.FindByDocument;
+using DataPoints.Infrastructure.Persistence.Main.Person.Queries.FindByNormalizedDocument;
 using DataPoints.Infrastructure.Persistence.Main.Person.Queries.FindResponseByDocument;
 
 namespace DataPoints.Infrastructure.Persistence.Main.Person;
@@ -21,6 +21,13 @@ public class PersonRepository : CrudRepository<PersonEntity, Guid>, IPersonRepos
 
         return QuerySingle(query);
     }   
+    
+    public Task<PersonEntity?> FindByNormalizedDocument(string document)
+    {
+        var query = new FindByNormalizedDocumentQuery(new FindByNormalizedDocumentFilter(document));
+        
+        return QuerySingle(query);
+    }
     
     public Task<UserInfoQueryResponse?> FindResponseByDocument(string documentNormalized)
     {

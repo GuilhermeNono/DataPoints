@@ -25,6 +25,7 @@ public static class ErrorMessage
         public static string MigrationFailed() => "Houve uma falha ao executar a migração do banco de dados.";
 
         public static string UserNotFound(Guid id) => $"Não foi possível encontrar um usuário com o Id {id}";
+        public static string UserNotFound() => "Não foi possível encontrar um usuário.";
 
         public static string LoginNotFound() => "Credenciais inexistentes ou inválidas.";
 
@@ -59,6 +60,7 @@ public static class ErrorMessage
         public static string WalletUserNotFound(Guid userId) => $"Nâo foi possivel encontrar uma carteira para o usuario {userId}.";
 
         public static string WalletNotFound(Guid walletId) => $"A carteira de id {walletId} não foi encontrada.";
+        public static string WalletNotFound() => $"Nenhuma carteira ativa foi encontrada para esse usuario.";
 
         public static string LastBlockNotFound() =>
             "Não foi possivel completar a transação, pois o ultimo bloco não foi encontrado.";

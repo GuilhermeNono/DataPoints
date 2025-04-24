@@ -8,4 +8,8 @@ public class UserNotFoundException : UnprocessableEntityException
     public UserNotFoundException(Guid id) : base(ErrorMessage.Exception.UserNotFound(id))
     {
     }
+    
+    public UserNotFoundException() : base(ErrorMessage.Exception.UserNotFound())
+    {
+    }
 }

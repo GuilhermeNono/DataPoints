@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace DataPoints.Infrastructure.EFCore.Query.CustomQuery;
 
@@ -56,7 +57,7 @@ public class QuerySqlPropertyConfigurer<TResult>
     /// </code>
     /// </example>
     /// </summary>
-    protected void Add(string value)
+    protected void Add([LanguageInjection("SQL")]string value)
     {
         Add(value, true);
     }
@@ -72,7 +73,7 @@ public class QuerySqlPropertyConfigurer<TResult>
     /// </code>
     /// </example>
     /// </summary>
-    protected void Add(string value, bool condition)
+    protected void Add([LanguageInjection("SQL")]string value, bool condition)
     {
         if (!condition)
             return;

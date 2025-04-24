@@ -2,6 +2,7 @@
 using DataPoints.Contract.Transaction.ByHash;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Person;
+using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Wallet;
 using DataPoints.Crosscutting.Mapper.Responses;
 using DataPoints.Domain.Enums;
 using DataPoints.Domain.Repositories.Main;

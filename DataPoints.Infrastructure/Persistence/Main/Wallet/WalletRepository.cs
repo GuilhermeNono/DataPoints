@@ -3,6 +3,7 @@ using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Repositories.Main;
 using DataPoints.Infrastructure.EFCore.Abstractions;
 using DataPoints.Infrastructure.EFCore.Database.Context;
+using DataPoints.Infrastructure.Persistence.Main.Wallet.Queries.FindBalanceByUser;
 using DataPoints.Infrastructure.Persistence.Main.Wallet.Queries.FindByHash;
 using DataPoints.Infrastructure.Persistence.Main.Wallet.Queries.FindByPublicKey;
 using DataPoints.Infrastructure.Persistence.Main.Wallet.Queries.FindByUser;
@@ -33,6 +34,13 @@ public class WalletRepository : CrudRepository<WalletEntity, Guid>, IWalletRepos
     {
         var query = new FindByUserQuery(new FindByUserFilter(userId));
 
+        return QuerySingle(query);
+    }
+
+    public Task<decimal> FindBalanceByUser(Guid personId)
+    {
+        var query = new FindBalanceByUserQuery(new FindBalanceByUserFilter(personId));
+        
         return QuerySingle(query);
     }
 }
