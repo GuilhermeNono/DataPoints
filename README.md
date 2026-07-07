@@ -1,71 +1,91 @@
-# DataPoints
+# 💠 DataPoints
 
-DataPoints is an API for transferring internal points between users using a private blockchain-style ledger. This project is developed in C# with .NET 10, DbUp, and Entity Framework (EF) over PostgreSQL (Supabase).
+**DataPoints** é uma API para transferência de pontos internos entre usuários, sustentada por um ledger no estilo blockchain privado. Cada transferência é agrupada em um bloco encadeado ao anterior (hash + Merkle root sobre as transações), garantindo evidência de violação (tamper-evidence) sobre todo o histórico.
 
-## Description
+Desenvolvido em **C#** com **.NET 10**, **DbUp** e **Entity Framework Core** sobre **PostgreSQL (Supabase)**.
 
-The goal of this project is to provide a secure and transparent system for distributing points among users. Every transfer is grouped into a block chained to the previous one (hash + Merkle root over the transactions), giving tamper-evidence over the ledger.
+## 📖 Sobre o projeto
 
-## Technologies Used
+O objetivo é oferecer um sistema seguro e transparente para distribuir e transacionar pontos entre usuários, sem depender de confiança cega em um banco de dados mutável. Toda transferência exige uma assinatura ECDSA gerada no cliente (a chave privada nunca sai do dispositivo do usuário), e um job em background valida continuamente a integridade da cadeia.
 
-- **C#**
-- **.NET 10**
-- **PostgreSQL** (Supabase) via **Npgsql** / Entity Framework Core
-- **DbUp** (schema migrations, run automatically on startup)
-- **NBitcoin** (ECDSA signatures)
-- **Hangfire** (background chain validation)
+## 🚀 Tecnologias
 
-## Features
+| Camada | Tecnologia |
+| --- | --- |
+| Linguagem / Runtime | **C# / .NET 10** |
+| Banco de dados | **PostgreSQL** (Supabase) via **Npgsql** / **Entity Framework Core** |
+| Migrations | **DbUp** (versionadas em SQL, aplicadas automaticamente no boot) |
+| Assinatura criptográfica | **NBitcoin** (ECDSA) |
+| Jobs em background | **Hangfire** (validação contínua da cadeia) |
+| Mensageria de comandos/queries | **MediatR** |
 
-- Transfer points between users, authorized by a client-side ECDSA signature (the private key never leaves the client)
-- Idempotent transfers (`Idempotency-Key` header) and anti-replay signed payloads
-- Transaction history and continuous chain validation
-- Row-Level Security (RLS) on every table, in addition to application-level authorization
+## ✨ Funcionalidades
 
-## How to Run
+- 🔐 **Autenticação & SSO** — sign-in, sign-up, refresh token e integração de single sign-on
+- 💸 **Transferência de pontos** entre usuários, autorizada por assinatura ECDSA client-side
+- 🧾 **Idempotência** de transferências via header `Idempotency-Key`, com payloads assinados anti-replay
+- 💰 **Consulta de saldo** (`wallets/balance`) e histórico de transações por bloco
+- ⛓️ **Cadeia de blocos** com hash encadeado e Merkle root, validada continuamente em background
+- 🛡️ **Row-Level Security (RLS)** em todas as tabelas, somada à autorização em nível de aplicação
+- 🚦 **Rate limiting** em rotas sensíveis (autenticação e SSO)
 
-1. Clone the repository:
+## 🏗️ Arquitetura
+
+O projeto segue uma organização em camadas (Clean Architecture):
+
+- `DataPoints.Api` — ponto de entrada, configuração e bootstrap
+- `DataPoints.Presentation` — controllers e contratos de rota HTTP
+- `DataPoints.Application` — casos de uso (commands/queries via MediatR)
+- `DataPoints.Domain` — entidades, regras de negócio e interfaces
+- `DataPoints.Contract` — DTOs de request/response
+- `DataPoints.Infrastructure` — persistência, EF Core e scripts DbUp
+- `DataPoints.Crosscutting` / `DataPoints.Crosscutting.Mapper` — utilitários e mapeamentos compartilhados
+- `DataPoints.Domain.Tests` — testes unitários do domínio
+
+## ⚙️ Como executar
+
+1. Clone o repositório:
    ```bash
    git clone https://github.com/GuilhermeNono/DataPoints.git
    ```
-2. Navigate to the project directory:
+2. Acesse a pasta do projeto:
    ```bash
    cd DataPoints
    ```
-3. Restore project dependencies:
+3. Restaure as dependências:
    ```bash
    dotnet restore
    ```
-4. Provide a PostgreSQL/Supabase connection string via User Secrets (never commit it to `appsettings*.json`):
+4. Configure a connection string do PostgreSQL/Supabase via User Secrets (nunca commite em `appsettings*.json`):
    ```bash
    cd DataPoints.Api
    dotnet user-secrets set "ConnectionStrings:MainDatabase" "Host=...;Port=6543;Database=postgres;Username=app_user;Password=...;SSL Mode=Require"
-   dotnet user-secrets set "JwtConfiguration:SecretKey" "<32+ random bytes, base64>"
-   dotnet user-secrets set "ChainSigningConfiguration:PublicKey" "<system ECDSA public key, base64>"
-   dotnet user-secrets set "ChainSigningConfiguration:PrivateKey" "<system ECDSA private key, base64>"
+   dotnet user-secrets set "JwtConfiguration:SecretKey" "<32+ bytes aleatórios, base64>"
+   dotnet user-secrets set "ChainSigningConfiguration:PublicKey" "<chave pública ECDSA do sistema, base64>"
+   dotnet user-secrets set "ChainSigningConfiguration:PrivateKey" "<chave privada ECDSA do sistema, base64>"
    ```
-   See [DataPoints.Api/appsettings.Development.example.json](DataPoints.Api/appsettings.Development.example.json) for the expected shape.
-5. Start the application (schema migrations, including RLS policies, run automatically on boot):
+   Veja [DataPoints.Api/appsettings.Development.example.json](DataPoints.Api/appsettings.Development.example.json) para o formato esperado.
+5. Suba a aplicação (as migrations, incluindo as políticas de RLS, rodam automaticamente no boot):
    ```bash
    dotnet run --project DataPoints.Api
    ```
 
-There is no manual migration step (`dotnet ef ...`) — schema changes live in versioned SQL scripts under `DataPoints.Infrastructure/DbUp/Scripts/Postgres/` and are applied by DbUp when the API starts.
+> ℹ️ Não há passo manual de migration (`dotnet ef ...`) — as mudanças de schema vivem em scripts SQL versionados em `DataPoints.Infrastructure/DbUp/Scripts/Postgres/` e são aplicadas pelo DbUp na subida da API.
 
-## Contribution
+## 🤝 Contribuindo
 
-If you wish to contribute to this project, please follow these steps:
+Quer contribuir com o projeto? Siga os passos:
 
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -m 'Add new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
-5. Open a Pull Request
+1. Faça um fork do repositório
+2. Crie uma branch para a sua feature (`git checkout -b feature/nova-feature`)
+3. Faça commit das suas alterações (`git commit -m 'Add nova feature'`)
+4. Envie para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
 
-## License
+## 📄 Licença
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
-Developed by [GuilhermeNono](https://github.com/GuilhermeNono)
+Desenvolvido com 💙 por [GuilhermeNono](https://github.com/GuilhermeNono)
