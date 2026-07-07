@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 namespace DataPoints.Domain.Repositories.Main;
 
 public interface IUserRepository : ICrudRepository<UserEntity, Guid>, IUserPasswordStore<UserEntity>, IUserEmailStore<UserEntity>,
-    IUserSecurityStampStore<UserEntity>
+    IUserSecurityStampStore<UserEntity>, IUserLockoutStore<UserEntity>
 {
     Task<UserEntity?> FindByNormalizedEmail(string normalizedEmail);
 }

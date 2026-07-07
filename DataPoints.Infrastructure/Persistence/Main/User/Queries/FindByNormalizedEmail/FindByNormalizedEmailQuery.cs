@@ -8,7 +8,7 @@ public class FindByNormalizedEmailQuery(FindByNormalizedEmailFilter filter) : Cu
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Ath_Users ");
-        Add($"    WHERE NormalizedEmail = {Param(x => x.Login)} ");
+        Add("     FROM core.ath_users ");
+        Add($"    WHERE normalizedemail = {Param(x => x.Login)} ");
     }
 }

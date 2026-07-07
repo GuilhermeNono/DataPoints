@@ -31,7 +31,7 @@ public class TransactionPipelineBehaviour<TRequest, TResponse> :
         if (transactionAnnotation?.TransactionType is DbTransactionType.NoTransaction)
             return await next();
 
-        var transactionType = transactionAnnotation?.TransactionType ?? DbTransactionType.ReadUncommitted;
+        var transactionType = transactionAnnotation?.TransactionType ?? DbTransactionType.ReadCommit;
 
         try
         {

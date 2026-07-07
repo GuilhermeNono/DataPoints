@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="dbup" Version="5.0.41" />
+      <PackageReference Include="dbup-postgresql" Version="6.0.3" />
       <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.13" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
       <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.7.0" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     </ItemGroup>
@@ -23,52 +23,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="DbUp\Scripts\Versions\1.0\script-1.0.2.sql">
+      <!-- ARC-4: scripts ativos (PostgreSQL/Supabase) — lidos por DbUpExtension em runtime. -->
+      <EmbeddedResource Include="DbUp\Scripts\Postgres\**\*.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
-      <None Remove="DbUp\Scripts\Versions\script-1.0.0.sql" />
-      <None Remove="DbUp\Scripts\Audit\Versions\script-1.0.0.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Audit\Versions\script-1.0.0.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="DbUp\Scripts\Functions\Temp\proc-temp.txt" />
-      <EmbeddedResource Include="DbUp\Scripts\Functions\Temp\proc-temp.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="DbUp\Scripts\Audit\Versions\script-1.0.1.sql" />
-      <None Remove="DbUp\Scripts\Versions\script-1.0.1.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\1.0\script-1.0.0.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="DbUp\Scripts\Versions\script-1.0.2.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\1.0\script-1.0.1.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="DbUp\Scripts\Versions\Temp\2025-03-17-2008.sql" />
-      <None Remove="DbUp\Scripts\Versions\1.1\script-1.1.0.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\1.1\script-1.1.0.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="DbUp\Scripts\Versions\1.1\script-1.1.1.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\1.1\script-1.1.1.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="DbUp\Scripts\Versions\1.0\script-1.0.3.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\1.0\script-1.0.3.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="DbUp\Scripts\Versions\1.0\script-1.0.4.sql" />
-      <None Remove="DbUp\Scripts\Versions\1.1\script-1.1.2.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\1.1\script-1.1.2.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="DbUp\Scripts\Versions\1.2\script-1.2.1.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\1.2\script-1.2.1.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="DbUp\Scripts\Versions\1.2\script-1.2.0.sql" />
-      <EmbeddedResource Include="DbUp\Scripts\Versions\1.2\script-1.2.0.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <!-- Scripts históricos do SQL Server (pré-ARC-4) — mantidos apenas como referência do schema
+           original; não são mais lidos em runtime (DbUpExtension aponta só para DbUp\Scripts\Postgres). -->
+      <EmbeddedResource Include="DbUp\Scripts\Versions\**\*.sql;DbUp\Scripts\Audit\**\*.sql;DbUp\Scripts\Functions\**\*.*">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
     </ItemGroup>
 

@@ -8,7 +8,7 @@ public class FindByRefreshTokenQuery(FindByRefreshTokenFilter filter) : CustomQu
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Ath_RefreshTokens ");
-        Add($"    WHERE Token = {Param(x => x.RefreshToken)} ");
+        Add("     FROM core.ath_refreshtokens ");
+        Add($"    WHERE token = {Param(x => x.RefreshToken)} ");
     }
 }

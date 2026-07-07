@@ -9,8 +9,8 @@ public class FindLatestValidationAvailableQuery(FindLatestValidationAvailableFil
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Btc_Validations ");
-        Add($"    WHERE IdBatchStatus = {Param(x => x.ProcessingState)} ");
-        Add($"       OR IdBatchStatus = {Param(x => x.PendingState)} ");
+        Add("     FROM core.btc_validations ");
+        Add($"    WHERE idbatchstatus = {Param(x => x.ProcessingState)} ");
+        Add($"       OR idbatchstatus = {Param(x => x.PendingState)} ");
     }
 }

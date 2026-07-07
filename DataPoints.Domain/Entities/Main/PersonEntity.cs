@@ -5,7 +5,7 @@ using DataPoints.Domain.Enums.Entities;
 
 namespace DataPoints.Domain.Entities.Main;
 
-[Table("Ppl_People")]
+[Table("ppl_people")]
 public class PersonEntity : AuditableStatefulEntity<Guid>
 {
     public string FirstName { get; set; } = string.Empty;
@@ -16,7 +16,7 @@ public class PersonEntity : AuditableStatefulEntity<Guid>
     public string NormalizedDocumentNumber { get; set; } = string.Empty;
     public DocumentType DocumentType { get; set; }
     public PersonType PersonType { get; set; }
-    public DateTime DateInclusion { get; set; } = DateTime.Now;
+    public DateTime DateInclusion { get; set; } = DateTime.UtcNow;
     public string UserName => $"{FullName}#{Id}";
     public string FullName => $"{FirstName} {LastName}";
 }

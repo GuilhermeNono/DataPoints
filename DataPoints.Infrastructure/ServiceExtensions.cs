@@ -12,6 +12,7 @@ using DataPoints.Infrastructure.Persistence.Audit;
 using DataPoints.Infrastructure.Persistence.Main.Batch.Checkpoint;
 using DataPoints.Infrastructure.Persistence.Main.Batch.Validation;
 using DataPoints.Infrastructure.Persistence.Main.Block;
+using DataPoints.Infrastructure.Persistence.Main.Idempotency;
 using DataPoints.Infrastructure.Persistence.Main.Permission;
 using DataPoints.Infrastructure.Persistence.Main.Person;
 using DataPoints.Infrastructure.Persistence.Main.Profile;
@@ -25,25 +26,27 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 
 namespace DataPoints.Infrastructure;
 
 public static class ServiceExtensions
 {
-    private const string MainConnectionName = "MainDatabase";
-    private const string AuditConnectionName = "AuditDatabase";
+    public const string MainConnectionName = "MainDatabase";
 
     #region || Database ||
 
     public static IServiceCollection ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<IMainContext, MainContext>(opt =>
-            opt.UseSqlServer(configuration.GetConnectionString(MainConnectionName)));
+        services.AddScoped(_ => new NpgsqlConnection(configuration.GetConnectionString(MainConnectionName)));
 
-        services.AddDbContext<IAuditContext, AuditContext>(opt =>
+        services.AddDbContext<IMainContext, MainContext>((sp, opt) =>
+            opt.UseNpgsql(sp.GetRequiredService<NpgsqlConnection>()));
+
+        services.AddDbContext<IAuditContext, AuditContext>((sp, opt) =>
             {
                 opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-                opt.UseSqlServer(configuration.GetConnectionString(AuditConnectionName));
+                opt.UseNpgsql(sp.GetRequiredService<NpgsqlConnection>());
             }
         );
 
@@ -64,17 +67,15 @@ public static class ServiceExtensions
         services.AddScoped<IBlockRepository, BlockRepository>();
         services.AddScoped<IBatchValidationRepository, BatchValidationRepository>();
         services.AddScoped<IBatchCheckpointRepository, BatchCheckpointRepository>();
+        services.AddScoped<IIdempotencyKeyRepository, IdempotencyKeyRepository>();
 
         return services;
     }
 
     public static IServiceCollection AddAuditRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IPermissionLogRepository, PermissionLogRepository>();
-        services.AddScoped<IPersonLogRepository, PersonLogRepository>();
-        services.AddScoped<IProfileLogRepository, ProfileLogRepository>();
-        services.AddScoped<IUserLogRepository, UserLogRepository>();
-        services.AddScoped<IWalletLogRepository, WalletLogRepository>();
+        services.AddScoped<IChangeLogRepository, ChangeLogRepository>();
+        services.AddScoped<IUserJourneyRepository, UserJourneyRepository>();
 
         return services;
     }
@@ -83,10 +84,8 @@ public static class ServiceExtensions
 
     #region || Auth ||
 
-    public static void ConfigureAuthentication(this IServiceCollection services)
+    public static void ConfigureAuthentication(this IServiceCollection services, IJwtConfiguration jwtConfiguration)
     {
-        var jwtConfiguration = services.BuildServiceProvider().GetRequiredService<IJwtConfiguration>();
-
         services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -123,10 +122,8 @@ public static class ServiceExtensions
     
     #region || Identity ||
 
-    public static void ConfigureIdentity(this IServiceCollection services)
+    public static void ConfigureIdentity(this IServiceCollection services, IJwtConfiguration jwtConfiguration)
     {
-        var jwtConfiguration = services.BuildServiceProvider().GetRequiredService<IJwtConfiguration>();
-        
         services.Configure<DataProtectionTokenProviderOptions>(opt =>
             opt.TokenLifespan = new TimeSpan(DateTime.UtcNow.AddMinutes(jwtConfiguration.ExpirationInMinutes).Ticks));
 
@@ -134,6 +131,9 @@ public static class ServiceExtensions
             {
                 o.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
                 o.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+                o.Lockout.AllowedForNewUsers = true;
+                o.Lockout.MaxFailedAccessAttempts = 5;
+                o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             })
             .AddUserStore<UserRepository>()
             .AddDefaultTokenProviders()

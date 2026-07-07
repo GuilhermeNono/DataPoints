@@ -6,11 +6,13 @@ using DataPoints.Presentation.Controllers.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Logging;
 
 namespace DataPoints.Presentation.Controllers;
 
 [ApiRoute("sso")]
+[EnableRateLimiting("auth")]
 public class SingleSignIOnController : ApiController
 {
     public SingleSignIOnController(ISender sender, ILogger<IController> logger) : base(sender, logger)

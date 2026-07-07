@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using DataPoints.Domain.Enums;
-using Microsoft.Data.SqlClient;
 
 namespace DataPoints.Infrastructure.EFCore.Query.CustomQuery.Interfaces;
 

@@ -84,7 +84,7 @@ public abstract class QuerySqlConfigurer<TResult> : QuerySqlPropertyConfigurer<T
     private void SqlSelectWithPrepareQuery()
     {
         QueryBuilder.Clear();
-        Add($"   Select {SqlDataLimiter()} * ");
+        Add("   Select * ");
         Add("   From ( ");
         Prepare();
         Add("        ) t ");
@@ -95,12 +95,15 @@ public abstract class QuerySqlConfigurer<TResult> : QuerySqlPropertyConfigurer<T
         Pagination.Validate();
 
         if (!(Pagination?.IsPageable ?? false))
+        {
+            Add($"  Limit {Limiter.LimitData} ");
             return;
+        }
 
         if (_disregardExternalOrder)
             throw new ExternalOrderWithTreatablePagination();
 
-        Add($"  Offset {Pagination?.Size ?? 10} * ({Pagination?.Page} - 1) ");
+        Add($"  Offset {Pagination?.Size ?? 10 * (Pagination?.Page - 1)} ");
         Add($"  Rows Fetch Next {Pagination?.Size} Rows Only");
     }
 
@@ -114,11 +117,6 @@ public abstract class QuerySqlConfigurer<TResult> : QuerySqlPropertyConfigurer<T
             if (!Pagination.IsLastInOrder(order!))
                 Add(", ", Pagination.IsSortable);
         }
-    }
-
-    private string SqlDataLimiter()
-    {
-        return Pagination.Size == 0 ? $"TOP({Limiter.LimitData})" : string.Empty;
     }
 
     private void CheckIfThePaginationContainsOrdering()

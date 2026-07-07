@@ -8,7 +8,7 @@ public class FindByBlockIdQuery(FindByBlockIdFilter filter) : CustomQuery<FindBy
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Wlt_Transactions");
-        Add($"    WHERE IdBlock = {Param(x => x.BlockId)} ");
+        Add("     FROM wlt_transactions");
+        Add($"    WHERE idblock = {Param(x => x.BlockId)} ");
     }
 }

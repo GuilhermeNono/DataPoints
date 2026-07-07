@@ -9,10 +9,10 @@ public class FindByRoleQuery(FindByRoleFilter filter) : CustomQuery<FindByRoleFi
     protected override void Prepare()
     {
         Add("   SELECT pmp.* ");
-        Add("     FROM Prm_Profiles pmp ");
-        Add("    INNER JOIN Prm_Permissions pms On pms.Id = pmp.IdPermission ");
-        Add($"   WHERE pms.Name = {Param(x => x.Role)} ");
-        Add($"     AND pmp.IdUser = {Param(x => x.IdUser)} ");
-        Add($"     AND pms.IsBlocked = {Param(x => x.IsBlocked)} ");
+        Add("     FROM core.prm_profiles pmp ");
+        Add("    INNER JOIN core.prm_permissions pms On pms.id = pmp.idpermission ");
+        Add($"   WHERE pms.name = {Param(x => x.Role)} ");
+        Add($"     AND pmp.iduser = {Param(x => x.IdUser)} ");
+        Add($"     AND pms.isblocked = {Param(x => x.IsBlocked)} ");
     }
 }

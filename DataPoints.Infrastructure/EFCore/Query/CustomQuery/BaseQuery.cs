@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using DataPoints.Domain.Annotations;
 using DataPoints.Domain.Enums;
 using DataPoints.Infrastructure.EFCore.Query.CustomQuery.Interfaces;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 
 namespace DataPoints.Infrastructure.EFCore.Query.CustomQuery;
 
@@ -133,11 +133,11 @@ public abstract class BaseQuery<TResult, TFilter>(TFilter filter)
         if (Filter == null)
             return null;
 
-        var parameters = new List<SqlParameter>();
+        var parameters = new List<NpgsqlParameter>();
 
         foreach (var property in Filter.GetType().GetProperties())
         {
-            var value = property.GetValue(Filter);
+            var value = NormalizeParameterValue(property.GetValue(Filter));
 
             var isIgnorable = Attribute.IsDefined(property, typeof(IgnoreFilterPropertyAttribute));
 
@@ -145,11 +145,11 @@ public abstract class BaseQuery<TResult, TFilter>(TFilter filter)
                 continue;
 
             if (value == null)
-                parameters.Add(new SqlParameter(property.Name, DBNull.Value));
+                parameters.Add(new NpgsqlParameter(property.Name, DBNull.Value));
 
             if (value is IDictionary dictionary)
             {
-                List<SqlParameter>? dicValues = null;
+                List<NpgsqlParameter>? dicValues = null;
 
                 foreach (DictionaryEntry entry in dictionary)
                 {
@@ -157,15 +157,15 @@ public abstract class BaseQuery<TResult, TFilter>(TFilter filter)
                     {
                         foreach (var item in list)
                         {
-                            dicValues ??= new List<SqlParameter>();
-                            dicValues.Add(new SqlParameter(entry.Key.ToString(), item));
+                            dicValues ??= new List<NpgsqlParameter>();
+                            dicValues.Add(new NpgsqlParameter(entry.Key.ToString(), NormalizeParameterValue(item)));
                         }
                     }
                 }
 
                 dicValues ??=
                     ((Dictionary<object, object>)dictionary).Select(
-                        x => new SqlParameter(x.Key.ToString(), x.Value)).ToList();
+                        x => new NpgsqlParameter(x.Key.ToString(), NormalizeParameterValue(x.Value))).ToList();
 
                 parameters.AddRange(dicValues);
             }
@@ -173,15 +173,18 @@ public abstract class BaseQuery<TResult, TFilter>(TFilter filter)
             {
                 foreach (var item in enumerable)
                 {
-                    parameters.Add(new SqlParameter(property.Name, item ?? DBNull.Value));
+                    parameters.Add(new NpgsqlParameter(property.Name, NormalizeParameterValue(item) ?? DBNull.Value));
                 }
             }
             else
             {
-                parameters.Add(new SqlParameter(property.Name, value));
+                parameters.Add(new NpgsqlParameter(property.Name, value));
             }
         }
 
         return parameters.Any() ? parameters : null;
     }
+
+    private static object? NormalizeParameterValue(object? value) =>
+        value is Enum enumValue ? Convert.ChangeType(enumValue, Enum.GetUnderlyingType(enumValue.GetType())) : value;
 }

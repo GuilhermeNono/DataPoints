@@ -9,18 +9,19 @@ using DataPoints.Contract.Authentication.SignIn.Responses;
 using DataPoints.Contract.Authentication.SignUp.Requests;
 using DataPoints.Contract.Authentication.SignUp.Responses;
 using DataPoints.Domain.Annotations;
-using DataPoints.Domain.Enums;
 using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Interfaces;
 using DataPoints.Presentation.Controllers.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Logging;
 
 namespace DataPoints.Presentation.Controllers;
 
 [ApiRoute("auth")]
+[EnableRateLimiting("auth")]
 public class AuthenticationController : ApiController
 {
     public AuthenticationController(ISender sender, ILogger<IController> logger) : base(sender, logger)

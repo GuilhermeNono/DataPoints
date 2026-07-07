@@ -96,5 +96,17 @@ public static class ErrorMessage
 
         public static string SignatureIsInvalid() =>
             "Não foi possivel completar uma transação com a assinatura informada.";
+
+        public static string RequestExpired() =>
+            "A requisição foi assinada há muito tempo ou possui uma data futura. Gere uma nova assinatura e tente novamente.";
+
+        public static string IdempotencyKeyConflict() =>
+            "Essa Idempotency-Key já foi utilizada para uma requisição diferente ou ainda está em processamento.";
+
+        public static string RefreshTokenReused() =>
+            "Esse refresh token já foi utilizado anteriormente. Por segurança, todos os tokens dessa sessão foram revogados.";
+
+        public static string ForbiddenResource() =>
+            "Você não tem permissão para acessar esse recurso.";
     }
 }

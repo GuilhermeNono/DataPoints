@@ -4,7 +4,7 @@ using DataPoints.Domain.Enums;
 
 namespace DataPoints.Domain.Entities.Main;
 
-[Table("Prm_Permissions")]
+[Table("prm_permissions")]
 public class PermissionEntity : AuditableEntity<int>
 {
     public string Name { get; set; } = string.Empty;

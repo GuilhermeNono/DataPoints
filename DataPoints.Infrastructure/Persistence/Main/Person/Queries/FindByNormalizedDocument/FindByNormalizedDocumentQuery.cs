@@ -8,7 +8,7 @@ public class FindByNormalizedDocumentQuery(FindByNormalizedDocumentFilter filter
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Ppl_People ");
-        Add($"   WHERE NormalizedDocumentNumber = {Param(x => x.Document)} ");
+        Add("     FROM core.ppl_people ");
+        Add($"   WHERE normalizeddocumentnumber = {Param(x => x.Document)} ");
     }
 }

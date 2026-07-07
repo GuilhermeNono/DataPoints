@@ -6,4 +6,5 @@ namespace DataPoints.Domain.Database.Context;
 public interface IDatabaseContext : IDatabaseTransaction, IDisposable
 {
     DatabaseFacade Database { get; }
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

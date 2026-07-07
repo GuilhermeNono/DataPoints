@@ -4,10 +4,10 @@ using DataPoints.Domain.Enums.Entities;
 
 namespace DataPoints.Domain.Entities.Main;
 
-[Table("Btc_Validations")]
+[Table("btc_validations")]
 public class BatchValidationEntity : Entity<Guid>
 {
-    public DateTime BeginValidation { get; set; } = DateTime.Now;
+    public DateTime BeginValidation { get; set; } = DateTime.UtcNow;
     public DateTime? EndValidation { get; set; }
     public BatchStateType IdBatchStatus { get; set; } = BatchStateType.Pending;
     public int BlockInvalidated { get; set; }

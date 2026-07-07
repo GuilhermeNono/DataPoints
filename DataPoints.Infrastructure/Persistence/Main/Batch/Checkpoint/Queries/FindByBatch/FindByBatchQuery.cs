@@ -10,8 +10,8 @@ public class FindByBatchQuery(FindByBatchFilter filter) : CustomQuery<FindByBatc
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Btc_Checkpoints ");
-        Add($"    WHERE IdBatch = {Param(x => x.ValidationId)} ");
-        Add($"      AND IsValid = {Param(x => x.OnlyValidated)} ", !_filter.ShowInvalidatedOnes);
+        Add("     FROM core.btc_checkpoints ");
+        Add($"    WHERE idbatch = {Param(x => x.ValidationId)} ");
+        Add($"      AND isvalid = {Param(x => x.OnlyValidated)} ", !_filter.ShowInvalidatedOnes);
     }
 }

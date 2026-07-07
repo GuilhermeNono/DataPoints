@@ -2,9 +2,6 @@ using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Wallet;
-using DataPoints.Domain.Entities.Audit;
-using DataPoints.Domain.Entities.Main;
-using DataPoints.Domain.Repositories.Audit;
 using DataPoints.Domain.Repositories.Main;
 
 namespace DataPoints.Application.Members.Commands.Wallets.Balance.Update;
@@ -12,14 +9,12 @@ namespace DataPoints.Application.Members.Commands.Wallets.Balance.Update;
 public class WalletBalanceUpdateCommandHandler : ICommandHandler<WalletBalanceUpdateCommand, decimal>
 {
     private readonly IWalletRepository _wallet;
-    private readonly IWalletLogRepository _walletLog;
     private readonly IWalletTransactionRepository _walletTransaction;
 
-    public WalletBalanceUpdateCommandHandler(IWalletRepository wallet, IWalletTransactionRepository walletTransaction, IWalletLogRepository walletLog)
+    public WalletBalanceUpdateCommandHandler(IWalletRepository wallet, IWalletTransactionRepository walletTransaction)
     {
         _wallet = wallet;
         _walletTransaction = walletTransaction;
-        _walletLog = walletLog;
     }
 
     public async Task<decimal> Handle(WalletBalanceUpdateCommand request, CancellationToken cancellationToken)

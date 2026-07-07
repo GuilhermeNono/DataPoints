@@ -8,6 +8,6 @@ public class FindBalanceByUserQuery(FindBalanceByUserFilter filter)
     protected override void Prepare()
     {
         Add(
-            $"   SELECT COALESCE(SUM(t.Amount), 0) as Value FROM Wlt_Transactions t Inner Join Wlt_Wallets w On w.Id = t.IdWalletTo WHERE w.IdUser = {Param(x => x.IdPerson)}");
+            $"   SELECT COALESCE(SUM(t.amount), 0) as Value FROM core.wlt_transactions t Inner Join core.wlt_wallets w On w.id = t.idwalletto WHERE w.iduser = {Param(x => x.IdPerson)}");
     }
 }

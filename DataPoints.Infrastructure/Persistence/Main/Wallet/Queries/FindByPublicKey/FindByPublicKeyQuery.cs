@@ -8,9 +8,9 @@ public class FindByPublicKeyQuery(FindByPublicKeyFilter filter) : CustomQuery<Fi
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Wlt_Wallets ");
-        Add($"   WHERE PublicKey = {Param(x => x.PublicKey)} ");
-        Add($"     AND IsActive = {Param(x => x.IsActive)} ");
-        Add($"     AND IsBlocked = {Param(x => x.IsBlocked)} ");
+        Add("     FROM core.wlt_wallets ");
+        Add($"   WHERE publickey = {Param(x => x.PublicKey)} ");
+        Add($"     AND isactive = {Param(x => x.IsActive)} ");
+        Add($"     AND isblocked = {Param(x => x.IsBlocked)} ");
     }
 }

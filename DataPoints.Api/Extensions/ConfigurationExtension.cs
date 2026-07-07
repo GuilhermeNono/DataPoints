@@ -24,5 +24,6 @@ public static class ConfigurationExtension
     public static void RegisterConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddConfiguration<JwtConfiguration, IJwtConfiguration>(configuration);
+        services.AddConfiguration<ChainSigningConfiguration, IChainSigningConfiguration>(configuration);
     }
 }

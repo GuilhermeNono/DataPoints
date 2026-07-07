@@ -29,6 +29,6 @@ public class UserController : ApiController
     [HttpGet("documents/{document}")]
     public async Task<ActionResult<UserInfoQueryResponse>> GetUserByDocumentAsync(string document)
     {
-        return Ok(await Sender.Send(new UserGetByDocumentQuery(document)));
+        return Ok(await Sender.Send(new UserGetByDocumentQuery(document, LoggedPerson)));
     }
 }

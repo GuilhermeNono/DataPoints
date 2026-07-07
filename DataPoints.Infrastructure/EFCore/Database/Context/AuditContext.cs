@@ -16,6 +16,8 @@ public sealed class AuditContext(DbContextOptions<AuditContext> options, ILogger
     {
         logger.LogWarning("| Initializing EF Core Audit Database |");
 
+        modelBuilder.HasDefaultSchema("audit");
+
         var entities = GetEntitiesTypes(EntityType.Entity);
         var views = GetEntitiesTypes(EntityType.View);
 
@@ -30,6 +32,8 @@ public sealed class AuditContext(DbContextOptions<AuditContext> options, ILogger
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly,
             t => t.Name.Contains("log", StringComparison.CurrentCultureIgnoreCase));
         logger.LogInformation("| EF Audit Mappers Loaded |");
+
+        LowercaseIdentifiers(modelBuilder);
     }
 
     private Dictionary<Type, string> GetEntitiesTypes(EntityType type) => JoinAllChildren(type);

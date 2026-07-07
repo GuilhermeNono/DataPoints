@@ -1,4 +1,5 @@
 ﻿using DataPoints.Application.Members.Abstractions.Queries;
+using DataPoints.Crosscutting.Exceptions.Http.Forbidden;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Person;
 using DataPoints.Domain.CustomQuery;
 using DataPoints.Domain.Helpers;
@@ -18,8 +19,13 @@ public class UserGetByDocumentQueryHandler : IQueryHandler<UserGetByDocumentQuer
     public async Task<UserInfoQueryResponse> Handle(UserGetByDocumentQuery request, CancellationToken cancellationToken)
     {
         var document = DocumentHelper.ConfigureHelper(request.Document.Trim());
-        
-        return await _personRepository.FindResponseByDocument(document.Normalized)
+
+        var person = await _personRepository.FindResponseByDocument(document.Normalized)
                      ?? throw new PersonNotFoundException();
+        
+        if (!request.LoggedPerson.IsAdministrator && person.Id != request.LoggedPerson.Id)
+            throw new ForbiddenResourceException();
+
+        return person;
     }
 }

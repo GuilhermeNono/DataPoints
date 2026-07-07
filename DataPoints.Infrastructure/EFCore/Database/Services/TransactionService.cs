@@ -1,95 +1,124 @@
-﻿using DataPoints.Domain.Database.Context;
+using DataPoints.Domain.Database.Context;
 using DataPoints.Domain.Database.Transaction;
 using DataPoints.Domain.Enums;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 
 namespace DataPoints.Infrastructure.EFCore.Database.Services;
 
-public class TransactionService(
-    IMainContext mainContext,
-    IAuditContext auditContext,
-    ILogger<TransactionService> logger)
-    : ITransactionService
+public class TransactionService : ITransactionService
 {
-    private readonly Dictionary<int, IDatabaseTransaction?> _transactions = [];
-    private readonly Stack<int> _actionHashLayers = [];
-    private int? _hashCodeToFinishTransaction;
+    private const int MaxAttempts = 3;
+
+    private readonly IReadOnlyList<IDatabaseContext> _contexts;
+    private readonly ILogger<TransactionService> _logger;
+
+    private int _depth;
+
+    public TransactionService(IMainContext mainContext, IAuditContext auditContext, ILogger<TransactionService> logger)
+    {
+        _contexts = [mainContext, auditContext];
+        _logger = logger;
+    }
 
     public async Task ExecuteInTransactionContextAsync(Func<Task> action, DbTransactionType transactionType,
         TransactionLogLevel logLevel, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        await BeginTransaction(transactionType, cancellationToken);
-
-        SendMessageOfTransactionStatus("|> Beginning transactions\n", logLevel);
-
-        try
+        if (_depth > 0)
         {
-            int hashCode = action.GetHashCode();
-
-            _hashCodeToFinishTransaction ??= hashCode;
-            _actionHashLayers.Push(hashCode);
-
-            await action();
-
-
-            if (_actionHashLayers.Pop() == _hashCodeToFinishTransaction)
+            _depth++;
+            try
             {
-                await CommitAllDbTransactions(cancellationToken);
-                SendMessageOfTransactionStatus("|> Transaction Commited\n", logLevel, false);
+                await action();
             }
-        }
-        catch (Exception)
-        {
-            SendMessageOfTransactionStatus("|> Rollback transaction executed\n", logLevel, false);
+            finally
+            {
+                _depth--;
+            }
 
-            await RollbackAllDbTransactions(cancellationToken);
-            throw;
+            return;
+        }
+
+        for (var attempt = 1; ; attempt++)
+        {
+            _depth++;
+            try
+            {
+                await BeginAllDbTransactionsAsync(transactionType, cancellationToken);
+                SendMessageOfTransactionStatus("|> Beginning transactions\n", logLevel);
+
+                await action();
+
+                await CommitAllDbTransactionsAsync(cancellationToken);
+                SendMessageOfTransactionStatus("|> Transaction Commited\n", logLevel);
+                return;
+            }
+            catch (Exception e) when (attempt < MaxAttempts && IsTransientSerializationFailure(e))
+            {
+                await RollbackAllDbTransactionsAsync(cancellationToken);
+                _logger.LogWarning(
+                    "|> Falha de serialização/deadlock detectada, retentando (tentativa {Attempt}/{MaxAttempts})",
+                    attempt, MaxAttempts);
+                await Task.Delay(TimeSpan.FromMilliseconds(50 * attempt), cancellationToken);
+            }
+            catch (Exception)
+            {
+                SendMessageOfTransactionStatus("|> Rollback transaction executed\n", logLevel);
+                await RollbackAllDbTransactionsAsync(cancellationToken);
+                throw;
+            }
+            finally
+            {
+                _depth--;
+            }
         }
     }
 
-    private void SendMessageOfTransactionStatus(string message,
-        TransactionLogLevel logLevel = TransactionLogLevel.Explicit, bool whenTransactionsNotExist = true)
+    private async Task BeginAllDbTransactionsAsync(DbTransactionType transactionType, CancellationToken cancellationToken)
+    {
+        var owner = _contexts[0];
+        var ownerTransaction = await owner.BeginTransactionAsync(transactionType, cancellationToken);
+
+        foreach (var context in _contexts.Skip(1))
+            await context.EnlistTransactionAsync(ownerTransaction, cancellationToken);
+    }
+
+    private void SendMessageOfTransactionStatus(string message, TransactionLogLevel logLevel)
     {
         if (logLevel is TransactionLogLevel.Implicit)
             return;
 
-        if (whenTransactionsNotExist ? _transactions.Count == 0: _transactions.Count != 0)
-            logger.LogInformation("{Message}", message);
+        _logger.LogInformation("{Message}", message);
     }
 
-    private async Task BeginTransaction(DbTransactionType transactionType, CancellationToken cancellationToken)
+    private async Task CommitAllDbTransactionsAsync(CancellationToken cancellationToken)
     {
-        await ComputeDbTransaction(mainContext, transactionType, cancellationToken);
-        await ComputeDbTransaction(auditContext, transactionType, cancellationToken);
+        foreach (var context in _contexts)
+            await context.SaveChangesAsync(cancellationToken);
+
+        foreach (var context in _contexts)
+            await context.CommitTransactionAsync(cancellationToken);
     }
 
-    private async Task ComputeDbTransaction(IDatabaseContext context, DbTransactionType transactionType, CancellationToken cancellationToken)
+    private async Task RollbackAllDbTransactionsAsync(CancellationToken cancellationToken)
     {
-        if (!HashKeyExistInTransactionList(context.GetHashCode()))
+        foreach (var context in _contexts)
+            await context.RollbackTransactionAsync(cancellationToken);
+    }
+
+    private static bool IsTransientSerializationFailure(Exception exception)
+    {
+        var current = exception;
+        while (current is not null)
         {
-            await mainContext.BeginTransactionAsync(transactionType, cancellationToken);
-            _transactions.Add(context.GetHashCode(), context);
+            if (current is PostgresException { SqlState: PostgresErrorCodes.SerializationFailure or PostgresErrorCodes.DeadlockDetected })
+                return true;
+
+            current = current.InnerException;
         }
+
+        return false;
     }
-
-    private async Task CommitAllDbTransactions(CancellationToken cancellationToken)
-    {
-        await Task.WhenAll(_transactions.Select(x => x.Value!.CommitTransactionAsync(cancellationToken)).ToArray());
-    }
-
-    private async Task RollbackAllDbTransactions(CancellationToken cancellationToken)
-    {
-        foreach (var (provider, transaction) in _transactions)
-        {
-            if (transaction is null) continue;
-
-            await transaction.RollbackTransactionAsync(cancellationToken);
-            _transactions.Remove(provider);
-        }
-    }
-
-    private bool HashKeyExistInTransactionList(int hashKey) => _transactions.ContainsKey(hashKey);
 }

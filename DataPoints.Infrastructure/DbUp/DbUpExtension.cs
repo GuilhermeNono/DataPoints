@@ -1,8 +1,9 @@
-﻿using System.Text;
+using System.Text;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;
 using DataPoints.Domain.Helpers;
 using DbUp;
 using DbUp.Engine;
+using DbUp.Postgresql;
 using DbUp.ScriptProviders;
 using DbUp.Support;
 using Microsoft.AspNetCore.Builder;
@@ -12,77 +13,70 @@ namespace DataPoints.Infrastructure.DbUp;
 
 public static class DbUpExtension
 {
-    private const string ServerConnectionName = "MainDatabase";
-    private const string AuditServerConnectionName = "AuditDatabase";
-    private static readonly IReadOnlyList<string> ServerConnections = [ServerConnectionName, AuditServerConnectionName];
-
     public static IApplicationBuilder RunFunctionsDbUp(this IApplicationBuilder application,
         IConfiguration configuration)
     {
-        Console.WriteLine("| Checando funções customizadas dos Bancos |");
+        Console.WriteLine("| Checando funções customizadas do Banco |");
 
-        foreach (var connectionName in ServerConnections)
-        {
-            var connectionString = configuration.GetConnectionString(connectionName);
+        var connectionString = configuration.GetConnectionString(ServiceExtensions.MainConnectionName);
 
-            EnsureDatabase.For.SqlDatabase(connectionString);
+        EnsureDatabase.For.PostgresqlDatabase(connectionString);
 
-            var upgrader = ConfigureEngine(connectionString!, "Functions");
-
-            var result = upgrader.PerformUpgrade();
-            if (!result.Successful)
-                throw new DatabaseMigrationFailed();
-        }
-
-        Console.WriteLine("| Checagem das funções finalizadas |\n");
-
-        return application;
-    }
-
-
-    public static IApplicationBuilder RunMainDbUp(this IApplicationBuilder application, IConfiguration configuration)
-    {
-        Console.WriteLine("| Checando arquivos de migração do Banco |");
-        var connectionString = configuration.GetConnectionString(ServerConnectionName);
-
-        EnsureDatabase.For.SqlDatabase(connectionString);
-
-        var upgrader = ConfigureEngine(connectionString!, "Versions");
+        var upgrader = ConfigureEngine(connectionString!, "migrations_functions", "Postgres", "Functions");
 
         var result = upgrader.PerformUpgrade();
         if (!result.Successful)
             throw new DatabaseMigrationFailed();
-        Console.WriteLine("| Checagem de migração do Banco Finalizada |\n");
+
+        Console.WriteLine("| Checagem das funções finalizada |\n");
+
+        return application;
+    }
+
+    public static IApplicationBuilder RunMainDbUp(this IApplicationBuilder application, IConfiguration configuration)
+    {
+        Console.WriteLine("| Checando arquivos de migração do schema core |");
+        var connectionString = configuration.GetConnectionString(ServiceExtensions.MainConnectionName);
+
+        EnsureDatabase.For.PostgresqlDatabase(connectionString);
+
+        var upgrader = ConfigureEngine(connectionString!, "migrations_core", "Postgres", "Core");
+
+        var result = upgrader.PerformUpgrade();
+        if (!result.Successful)
+            throw new DatabaseMigrationFailed();
+        Console.WriteLine("| Checagem de migração do schema core finalizada |\n");
 
         return application;
     }
 
     public static IApplicationBuilder RunAuditDbUp(this IApplicationBuilder application, IConfiguration configuration)
     {
-        Console.WriteLine("| Checando arquivos de migração do Banco de Auditoria |");
-        var connectionString = configuration.GetConnectionString(AuditServerConnectionName);
+        Console.WriteLine("| Checando arquivos de migração do schema audit |");
+        var connectionString = configuration.GetConnectionString(ServiceExtensions.MainConnectionName);
 
-        EnsureDatabase.For.SqlDatabase(connectionString);
+        EnsureDatabase.For.PostgresqlDatabase(connectionString);
 
-        var upgrader = ConfigureEngine(connectionString!, "Audit", "Versions");
+        var upgrader = ConfigureEngine(connectionString!, "migrations_audit", "Postgres", "Audit");
 
         var result = upgrader.PerformUpgrade();
         if (!result.Successful)
             throw new DatabaseMigrationFailed();
-        Console.WriteLine("| Checagem de migração do Banco de Auditoria Finalizada |\n");
+        Console.WriteLine("| Checagem de migração do schema audit finalizada |\n");
 
         return application;
     }
 
-    private static UpgradeEngine ConfigureEngine(string connectionString, params string[] folder) => DeployChanges.To
-        .SqlDatabase(connectionString)
+    private static UpgradeEngine ConfigureEngine(string connectionString, string journalTableName, params string[] folder) => DeployChanges.To
+        .PostgresqlDatabase(connectionString)
         .WithScriptsFromFileSystem(Path.Combine([AppDomain.CurrentDomain.BaseDirectory, "DbUp", "Scripts", .. folder]),
             new FileSystemScriptOptions
             {
                 IncludeSubDirectories = true,
-                Extensions = ["*.sql"], 
+                Extensions = ["*.sql"],
                 Encoding = Encoding.UTF8
             })
+        .JournalToPostgresqlTable("public", journalTableName)
         .WithFilter(new ExecutionOrderScriptFilter())
         .WithTransactionPerScript()
         .Build();

@@ -3,6 +3,7 @@ using DataPoints.Application.Members.Abstractions.Queries;
 using DataPoints.Contract.Token.Refresh;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Entities.Main;
+using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Repositories.Main;
 
 namespace DataPoints.Application.Members.Queries.Authentication.Token.Refresh;
@@ -27,9 +28,9 @@ public class TokenRefreshGenerateQueryHandler : IQueryHandler<TokenRefreshGenera
 
         var token = GenerateToken();
 
-        var entity = new RefreshTokenEntity()
+        var entity = new RefreshTokenEntity
         {
-            Token = token,
+            TokenHash = SecurityHelper.CreateSha256Key(token).Hash,
             IdUser = request.IdUser
         };
 
@@ -38,7 +39,7 @@ public class TokenRefreshGenerateQueryHandler : IQueryHandler<TokenRefreshGenera
         return new TokenRefreshResponse(token);
     }
 
-    private string GenerateToken()
+    private static string GenerateToken()
     {
         var randomNumber = new byte[32];
         using var numberGenerator = RandomNumberGenerator.Create();

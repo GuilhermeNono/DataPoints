@@ -46,28 +46,15 @@ public static class SecurityHelper
         return new SecuritySha256Key(Convert.ToBase64String(hashInBytes));
     }
 
-    public static bool IsValidPrivateKey(string privateKey)
+    public static bool IsValidSignature(string data, string signatureBase64, string publicKeyBase64)
     {
         try
         {
-            var key = new Key(Convert.FromBase64String(privateKey));
+            var hash = Hashes.SHA256(Encoding.UTF8.GetBytes(data));
+            var signature = Convert.FromBase64String(signatureBase64);
+            var pubKey = new PubKey(Convert.FromBase64String(publicKeyBase64));
 
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            return key is not null;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    public static bool IsKeyPairValid(string publicKey, string privateKey)
-    {
-        try
-        {
-            var key = new Key(Convert.FromBase64String(privateKey));
-            
-            return Convert.ToBase64String(key.PubKey.ToBytes()) == publicKey;    
+            return pubKey.Verify(new uint256(hash), new ECDSASignature(signature));
         }
         catch
         {

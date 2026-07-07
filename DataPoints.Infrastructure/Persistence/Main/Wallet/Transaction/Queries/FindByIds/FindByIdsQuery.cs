@@ -8,7 +8,7 @@ public class FindByIdsQuery(FindByIdsFilter filter) : CustomQuery<FindByIdsFilte
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Wlt_Transactions ");
-        Add($"    WHERE Id in ({Param(x => x.Ids)}) ");
+        Add("     FROM wlt_transactions ");
+        Add($"    WHERE id in ({Param(x => x.Ids)}) ");
     }
 }

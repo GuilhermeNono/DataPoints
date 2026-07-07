@@ -43,7 +43,7 @@ public class BlockValidateCheckpointCommandHandler : ICommandHandler<BlockValida
 
         if (blocksToValidate.Count <= 0)
         {
-            latestValidation.EndValidation = DateTime.Now;
+            latestValidation.EndValidation = DateTime.UtcNow;
             latestValidation.IdBatchStatus = BatchStateType.Completed;
             
             await _sender.Send(new BlockCleanCheckpointCommand(latestValidation.Id, request.LoggedPerson), cancellationToken);

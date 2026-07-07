@@ -3,7 +3,7 @@ using DataPoints.Domain.Database.Entity;
 
 namespace DataPoints.Domain.Entities.Main;
 
-[Table("Btc_Checkpoints")]
+[Table("btc_checkpoints")]
 public class BatchCheckpointEntity : Entity<long>
 {
     public Guid IdBlock { get; set; }

@@ -1,9 +1,9 @@
-﻿using System.Security.Cryptography;
-using DataPoints.Application.Members.Abstractions.Commands;
+﻿using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Contract.Wallet.Private;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Entities.Audit;
 using DataPoints.Domain.Entities.Main;
+using DataPoints.Domain.Enums;
 using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Repositories.Audit;
 using DataPoints.Domain.Repositories.Main;
@@ -12,16 +12,16 @@ namespace DataPoints.Application.Members.Commands.Wallets.Insert;
 
 public class WalletInsertCommandHandler : ICommandHandler<WalletInsertCommand, WalletPrivateKeyResponse>
 {
-    
+
     private readonly IWalletRepository _walletRepository;
-    private readonly IWalletLogRepository _walletLogRepository;
+    private readonly IChangeLogRepository _changeLogRepository;
 
     private readonly IUserRepository _userRepository;
-    
-    public WalletInsertCommandHandler(IWalletRepository walletRepository, IWalletLogRepository walletLogRepository, IUserRepository userRepository)
+
+    public WalletInsertCommandHandler(IWalletRepository walletRepository, IChangeLogRepository changeLogRepository, IUserRepository userRepository)
     {
         _walletRepository = walletRepository;
-        _walletLogRepository = walletLogRepository;
+        _changeLogRepository = changeLogRepository;
         _userRepository = userRepository;
     }
 
@@ -40,9 +40,10 @@ public class WalletInsertCommandHandler : ICommandHandler<WalletInsertCommand, W
             Hash = walletHash.Hash,
             PublicKey = groupOfKeys.PublicKey,
         };
-        
+
         await _walletRepository.Add(wallet, request.LoggedPerson.Name, cancellationToken);
-        await _walletLogRepository.Add(new WalletLogEntity(wallet), request.LoggedPerson.Name, cancellationToken);
+        await _changeLogRepository.Add(ChangeLogEntity.For("Wlt_Wallets", wallet.Id, InternalOperation.C, wallet),
+            request.LoggedPerson.Name, cancellationToken);
 
         return new WalletPrivateKeyResponse(groupOfKeys.PrivateKey);
     }

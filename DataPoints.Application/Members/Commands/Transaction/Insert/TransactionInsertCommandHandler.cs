@@ -14,7 +14,6 @@ using DataPoints.Domain.Entities.Main;
 using DataPoints.Domain.Enums;
 using DataPoints.Domain.Helpers;
 using DataPoints.Domain.Objects;
-using DataPoints.Domain.Objects.Security;
 using DataPoints.Domain.Repositories.Main;
 using MediatR;
 
@@ -25,6 +24,8 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
     private readonly ISender _sender;
     private readonly IWalletRepository _walletRepository;
     private readonly IWalletTransactionRepository _walletTransactionRepository;
+
+    private static readonly TimeSpan SignatureValidityWindow = TimeSpan.FromMinutes(2);
 
     private decimal _senderWalletAmount = decimal.Zero;
     private decimal _receiverWalletAmount = decimal.Zero;
@@ -42,19 +43,22 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
     {
         if (request.LoggedPerson.Id is null)
             throw new LoggedPersonNotFoundException();
-        
-        if(!SecurityHelper.IsValidPrivateKey(request.Signature))
-            throw new SignatureIsInvalidException();
-        
+
+        if ((DateTime.UtcNow - request.IssuedAtUtc).Duration() > SignatureValidityWindow)
+            throw new RequestExpiredException();
+
         var receiver = await _walletRepository.FindByHash(request.ReceiverWallet)
                        ?? throw new WalletHashNotFoundException(request.ReceiverWallet);
 
         var sender = await _walletRepository.FindByUser(request.LoggedPerson.Id.GetValueOrDefault())
                      ?? throw new WalletUserNotFoundException(request.LoggedPerson.Id.GetValueOrDefault());
 
-        if (!SecurityHelper.IsKeyPairValid(sender.PublicKey, request.Signature))
+        var canonicalPayload =
+            $"{sender.Hash}|{receiver.Hash}|{request.Amount}|{request.IdempotencyKey}|{request.IssuedAtUtc:O}";
+
+        if (!SecurityHelper.IsValidSignature(canonicalPayload, request.Signature, sender.PublicKey))
             throw new SignatureIsInvalidException();
-        
+
         if (receiver.Id == sender.Id)
             throw new TransactionForYourselfException();
 
@@ -83,11 +87,9 @@ public class TransactionInsertCommandHandler : ICommandHandler<TransactionInsert
 
         await UpdateWallets(walletsId, request.LoggedPerson, cancellationToken);
 
-        var groupKeys = new SecurityGroupKey(sender.PublicKey, request.Signature);
-
         var blockHash =
             await _sender.Send(
-                new BlockInsertCommand([senderTransaction.Id, receiverTransaction.Id], groupKeys, request.LoggedPerson),
+                new BlockInsertCommand([senderTransaction.Id, receiverTransaction.Id], request.LoggedPerson),
                 cancellationToken);
 
         return new TransactionInsertResponse(blockHash, DateTime.Now);

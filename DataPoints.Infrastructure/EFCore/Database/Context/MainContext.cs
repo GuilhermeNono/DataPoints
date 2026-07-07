@@ -24,6 +24,9 @@ public sealed class MainContext(DbContextOptions<MainContext> options, ILogger<M
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         logger.LogWarning("| Initializing EF Core Main Database |");
+
+        modelBuilder.HasDefaultSchema("core");
+
         var entities = GetEntitiesTypes(EntityType.Entity);
         var views = GetEntitiesTypes(EntityType.View);
 
@@ -39,6 +42,8 @@ public sealed class MainContext(DbContextOptions<MainContext> options, ILogger<M
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly,
             t => !t.Name.Contains("log", StringComparison.CurrentCultureIgnoreCase));
         logger.LogInformation("| EF Main Mappers Loaded |");
+
+        LowercaseIdentifiers(modelBuilder);
     }
 
     private Dictionary<Type, string> GetEntitiesTypes(EntityType type) => JoinAllChildren(type);

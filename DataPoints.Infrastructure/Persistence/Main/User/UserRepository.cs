@@ -178,4 +178,60 @@ public class UserRepository : CrudRepository<UserEntity, Guid>, IUserRepository
         cancellationToken.ThrowIfCancellationRequested();
         return Task.FromResult(user.SecurityStamp.ToString())!;
     }
+
+    public Task<DateTimeOffset?> GetLockoutEndDateAsync(UserEntity user, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult(user.LockoutEnd);
+    }
+
+    public async Task SetLockoutEndDateAsync(UserEntity user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        user.LockoutEnd = lockoutEnd;
+
+        await UpdateAsync(user, cancellationToken);
+    }
+
+    public async Task<int> IncrementAccessFailedCountAsync(UserEntity user, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        user.AccessFailedCount++;
+
+        await UpdateAsync(user, cancellationToken);
+
+        return user.AccessFailedCount;
+    }
+
+    public async Task ResetAccessFailedCountAsync(UserEntity user, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (user.AccessFailedCount == 0)
+            return;
+
+        user.AccessFailedCount = 0;
+
+        await UpdateAsync(user, cancellationToken);
+    }
+
+    public Task<int> GetAccessFailedCountAsync(UserEntity user, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult(user.AccessFailedCount);
+    }
+
+    public Task<bool> GetLockoutEnabledAsync(UserEntity user, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult(user.LockoutEnabled);
+    }
+
+    public async Task SetLockoutEnabledAsync(UserEntity user, bool enabled, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        user.LockoutEnabled = enabled;
+
+        await UpdateAsync(user, cancellationToken);
+    }
 }

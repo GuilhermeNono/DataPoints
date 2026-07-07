@@ -6,20 +6,20 @@ namespace DataPoints.Api.Extensions;
 
 public static class JobExtension
 {
-    private static void RegisterJobs(IServiceCollection services)
+    public static void RegisterHangfireJobs(this IServiceCollection services)
     {
         services.AddJob<CheckChainJob>();
     }
 
-    public static void RegisterHangfireJobs(this IServiceCollection services)
+    public static void MapHangfireJobs(this IServiceProvider serviceProvider)
     {
-        RegisterJobs(services);
+        // IRecurringJob é Scoped — resolver direto do provider raiz lançaria em ambientes com
+        // ValidateScopes habilitado (padrão em Development).
+        using var scope = serviceProvider.CreateScope();
 
-        var serviceProvider = services.BuildServiceProvider();
+        var recurringJob = scope.ServiceProvider.GetRequiredService<IRecurringJobManagerV2>();
 
-        var recurringJob = serviceProvider.GetRequiredService<IRecurringJobManagerV2>();
-
-        var recurringJobServices = serviceProvider.GetServices(typeof(IRecurringJob)).Cast<IRecurringJob>();
+        var recurringJobServices = scope.ServiceProvider.GetServices(typeof(IRecurringJob)).Cast<IRecurringJob>();
 
         var cancellationToken = new CancellationTokenSource();
 

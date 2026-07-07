@@ -1,5 +1,6 @@
 using DataPoints.Application.Members.Abstractions.Commands;
 using DataPoints.Application.Members.Commands.Block.Validate;
+using DataPoints.Crosscutting.Configurations;
 using DataPoints.Crosscutting.Exceptions.Http.Internal;
 using DataPoints.Crosscutting.Exceptions.Http.NotFound;
 using DataPoints.Domain.Entities.Main;
@@ -15,13 +16,16 @@ public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, Gui
     private readonly IBlockRepository _blockRepository;
     private readonly IWalletTransactionRepository _walletTransactionRepository;
     private readonly ISender _sender;
+    private readonly IChainSigningConfiguration _chainSigningConfiguration;
 
     public BlockInsertCommandHandler(IBlockRepository blockRepository,
-        IWalletTransactionRepository walletTransactionRepository, ISender sender)
+        IWalletTransactionRepository walletTransactionRepository, ISender sender,
+        IChainSigningConfiguration chainSigningConfiguration)
     {
         _blockRepository = blockRepository;
         _walletTransactionRepository = walletTransactionRepository;
         _sender = sender;
+        _chainSigningConfiguration = chainSigningConfiguration;
     }
 
     public async Task<Guid> Handle(BlockInsertCommand request, CancellationToken cancellationToken)
@@ -55,13 +59,13 @@ public class BlockInsertCommandHandler : ICommandHandler<BlockInsertCommand, Gui
         var merkleRoot = MerkleTree.ComputeRoot(transactions.Select(x => x.TransactionSerialized).ToList());
 
         newBlock.MerkleRoot = merkleRoot;
-        
-        newBlock.PublicKey = request.SecurityKeys.PublicKey;
+
+        newBlock.PublicKey = _chainSigningConfiguration.PublicKey;
 
         await _blockRepository.Add(newBlock, request.LoggedPerson.Name, cancellationToken);
 
         newBlock.Hash = BlockHelper.CalculateHash(newBlock);
-        newBlock.BlockSignature = SecurityHelper.SignTransaction(newBlock.Hash, request.SecurityKeys.PrivateKey);
+        newBlock.BlockSignature = SecurityHelper.SignTransaction(newBlock.Hash, _chainSigningConfiguration.PrivateKey);
         
         await _blockRepository.Update(newBlock, request.LoggedPerson.Name, cancellationToken);
 

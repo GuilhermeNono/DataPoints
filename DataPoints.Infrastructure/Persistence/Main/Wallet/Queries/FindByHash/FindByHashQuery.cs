@@ -8,9 +8,9 @@ public class FindByHashQuery(FindByHashFilter filter) : CustomQuery<FindByHashFi
     protected override void Prepare()
     {
         Add("    SELECT * ");
-        Add("      FROM Wlt_Wallets ");
-        Add($"    WHERE Hash = {Param(x => x.Hash)} ");
-        Add($"      AND IsActive = {Param(x => x.IsActive)} ");
-        Add($"      AND IsBlocked = {Param(x => x.IsBlocked)} ");
+        Add("      FROM core.wlt_wallets ");
+        Add($"    WHERE hash = {Param(x => x.Hash)} ");
+        Add($"      AND isactive = {Param(x => x.IsActive)} ");
+        Add($"      AND isblocked = {Param(x => x.IsBlocked)} ");
     }
 }

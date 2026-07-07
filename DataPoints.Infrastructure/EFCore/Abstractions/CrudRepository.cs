@@ -1,6 +1,4 @@
-﻿using DataPoints.Crosscutting.Exceptions.Http.NotFound;
-using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity;
-using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Entity;
+﻿using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Entity;
 using DataPoints.Domain.Database.Entity.Interfaces;
 using DataPoints.Domain.Database.Repository;
 using DataPoints.Domain.Enums;
@@ -108,7 +106,7 @@ public abstract class CrudRepository<TEntity, TId>
         if (string.IsNullOrEmpty(userWhoUpdate))
             userWhoUpdate = UserHelper.System;
 
-        audit.LastChangeAt = DateTime.Now;
+        audit.LastChangeAt = DateTime.UtcNow;
         audit.LastChangeBy = userWhoUpdate;
         audit.InternalOperation = internalOperation;
     }
@@ -123,7 +121,7 @@ public abstract class CrudRepository<TEntity, TId>
             if (string.IsNullOrEmpty(userWhoUpdate))
                 userWhoUpdate = UserHelper.System;
 
-            audit.LastChangeAt = DateTime.Now;
+            audit.LastChangeAt = DateTime.UtcNow;
             audit.LastChangeBy = userWhoUpdate!;
             audit.InternalOperation = internalOperation;
         }

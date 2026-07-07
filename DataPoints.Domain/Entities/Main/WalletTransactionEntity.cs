@@ -3,7 +3,7 @@ using DataPoints.Domain.Database.Entity;
 
 namespace DataPoints.Domain.Entities.Main;
 
-[Table("Wlt_Transactions")]
+[Table("wlt_transactions")]
 public class WalletTransactionEntity : AuditableEntity<Guid>
 {
     public Guid IdWalletFrom { get; set; }

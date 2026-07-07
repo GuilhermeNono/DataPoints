@@ -8,9 +8,9 @@ public class FindByUserQuery(FindByUserFilter filter) : CustomQuery<FindByUserFi
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Wlt_Wallets ");
-        Add($"   WHERE IdUser = {Param(x => x.UserId)} ");
-        Add($"     AND IsActive = {Param(x => x.IsActive)} ");
-        Add($"     AND IsBlocked = {Param(x => x.IsBlocked)} ");
+        Add("     FROM core.wlt_wallets ");
+        Add($"   WHERE iduser = {Param(x => x.UserId)} ");
+        Add($"     AND isactive = {Param(x => x.IsActive)} ");
+        Add($"     AND isblocked = {Param(x => x.IsBlocked)} ");
     }
 }

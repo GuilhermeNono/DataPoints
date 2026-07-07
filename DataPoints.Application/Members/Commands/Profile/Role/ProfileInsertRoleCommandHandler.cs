@@ -4,6 +4,7 @@ using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Permissions;
 using DataPoints.Crosscutting.Exceptions.Http.UnprocessableEntity.Users;
 using DataPoints.Domain.Entities.Audit;
 using DataPoints.Domain.Entities.Main;
+using DataPoints.Domain.Enums;
 using DataPoints.Domain.Repositories.Audit;
 using DataPoints.Domain.Repositories.Main;
 
@@ -11,18 +12,18 @@ namespace DataPoints.Application.Members.Commands.Profile.Role;
 
 public class ProfileInsertRoleCommandHandler : ICommandHandler<ProfileInsertRoleCommand>
 {
-    
+
     private readonly IProfileRepository _profileRepository;
-    private readonly IProfileLogRepository _profileLogRepository;
-    
+    private readonly IChangeLogRepository _changeLogRepository;
+
     private readonly IPermissionRepository _permissionRepository;
-    
+
     private readonly IUserRepository _userRepository;
 
-    public ProfileInsertRoleCommandHandler(IProfileRepository profileRepository, IProfileLogRepository profileLogRepository, IPermissionRepository permissionRepository, IUserRepository userRepository)
+    public ProfileInsertRoleCommandHandler(IProfileRepository profileRepository, IChangeLogRepository changeLogRepository, IPermissionRepository permissionRepository, IUserRepository userRepository)
     {
         _profileRepository = profileRepository;
-        _profileLogRepository = profileLogRepository;
+        _changeLogRepository = changeLogRepository;
         _permissionRepository = permissionRepository;
         _userRepository = userRepository;
     }
@@ -47,6 +48,7 @@ public class ProfileInsertRoleCommandHandler : ICommandHandler<ProfileInsertRole
         };
 
         await _profileRepository.Add(newProfile, request.LoggedPerson.Name, cancellationToken);
-        await _profileLogRepository.Add(new ProfileLogEntity(newProfile), request.LoggedPerson.Name, cancellationToken);
+        await _changeLogRepository.Add(ChangeLogEntity.For("Prm_Profiles", newProfile.Id, InternalOperation.C, newProfile),
+            request.LoggedPerson.Name, cancellationToken);
     }
 }

@@ -7,12 +7,12 @@ public class FindResponseByDocumentQuery(FindResponseByDocumentFilter filter) : 
 {
     protected override void Prepare()
     {
-        Add($"   SELECT ppl.DocumentNumber {Alias(x => x.FullDocument)}, ");
-        Add($"          ppl.FirstName {Alias(x => x.FirstName)}, ");
-        Add($"          ppl.LastName {Alias(x => x.LastName)}, ");
-        Add($"          wlt.Hash {Alias(x => x.WalletCode)}, ");
-        Add($"          ppl.Id {Alias(x => x.Id)} ");
-        Add("     FROM ppl_people ppl ");
-        Add("    INNER JOIN wlt_wallets wlt on wlt.IdUser = ppl.Id ");
+        Add($"   SELECT ppl.documentnumber {Alias(x => x.FullDocument)}, ");
+        Add($"          ppl.firstname {Alias(x => x.FirstName)}, ");
+        Add($"          ppl.lastname {Alias(x => x.LastName)}, ");
+        Add($"          wlt.hash {Alias(x => x.WalletCode)}, ");
+        Add($"          ppl.id {Alias(x => x.Id)} ");
+        Add("     FROM core.ppl_people ppl ");
+        Add("    INNER JOIN core.wlt_wallets wlt on wlt.iduser = ppl.id ");
     }
 }

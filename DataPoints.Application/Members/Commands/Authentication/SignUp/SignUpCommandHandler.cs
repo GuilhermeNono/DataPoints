@@ -23,19 +23,16 @@ public class SignUpCommandHandler : ICommandHandler<SignUpCommand, SignUpRespons
     private readonly UserManager<UserEntity> _userManagerRepository;
 
     private readonly IUserRepository _userRepository;
-    private readonly IUserLogRepository _userLogRepository;
-
     private readonly IPersonRepository _personRepository;
-    private readonly IPersonLogRepository _personLogRepository;
-    
+    private readonly IChangeLogRepository _changeLogRepository;
+
     private readonly ISender _sender;
 
-    public SignUpCommandHandler(IPersonRepository personRepository,
-        IUserLogRepository userLogRepository, IPersonLogRepository personLogRepository, IUserRepository userRepository, UserManager<UserEntity> userManagerRepository, ISender sender)
+    public SignUpCommandHandler(IPersonRepository personRepository, IChangeLogRepository changeLogRepository,
+        IUserRepository userRepository, UserManager<UserEntity> userManagerRepository, ISender sender)
     {
         _personRepository = personRepository;
-        _userLogRepository = userLogRepository;
-        _personLogRepository = personLogRepository;
+        _changeLogRepository = changeLogRepository;
         _userRepository = userRepository;
         _userManagerRepository = userManagerRepository;
         _sender = sender;
@@ -68,8 +65,9 @@ public class SignUpCommandHandler : ICommandHandler<SignUpCommand, SignUpRespons
             throw new DocumentIsAlreadyInUseException(request.DocumentNumber);
 
         await _userManagerRepository.CreateAsync(user);
-        await _userLogRepository.Add(new UserLogEntity(user), request.LoggedPerson.Name, cancellationToken);
-        
+        await _changeLogRepository.Add(ChangeLogEntity.For("Ath_Users", user.Id, InternalOperation.C, user),
+            request.LoggedPerson.Name, cancellationToken);
+
         var personEntity = new PersonEntity()
         {
             Id = user.Id,
@@ -81,9 +79,10 @@ public class SignUpCommandHandler : ICommandHandler<SignUpCommand, SignUpRespons
             LastName = request.LastName,
             PersonType = document.PersonType
         };
-        
+
         await _personRepository.Add(personEntity, request.LoggedPerson.Name, cancellationToken);
-        await _personLogRepository.Add(new PersonLogEntity(personEntity), request.LoggedPerson.Name, cancellationToken);
+        await _changeLogRepository.Add(ChangeLogEntity.For("Ppl_People", personEntity.Id, InternalOperation.C, personEntity),
+            request.LoggedPerson.Name, cancellationToken);
 
         await _sender.Send(new ProfileInsertRoleCommand(user.Id, RoleHelper.User, request.LoggedPerson), cancellationToken);
 

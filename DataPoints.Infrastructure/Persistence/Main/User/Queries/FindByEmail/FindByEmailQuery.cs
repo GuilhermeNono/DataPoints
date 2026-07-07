@@ -8,7 +8,7 @@ public class FindByEmailQuery(FindByEmailFilter filter) : CustomQuery<FindByEmai
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Ath_Users ");
-        Add($"    WHERE Email = {Param(x => x.Login)} ");
+        Add("     FROM core.ath_users ");
+        Add($"    WHERE email = {Param(x => x.Login)} ");
     }
 }

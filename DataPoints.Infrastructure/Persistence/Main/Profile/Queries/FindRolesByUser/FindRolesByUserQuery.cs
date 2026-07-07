@@ -8,8 +8,8 @@ public class FindRolesByUserQuery(FindRolesByUserFilter filter) : CustomQuery<Fi
     protected override void Prepare()
     {
         Add("   SELECT pm.* ");
-        Add("     FROM Prm_Profiles p");
-        Add("    INNER JOIN Prm_Permissions pm On pm.Id = p.IdPermission ");
-        Add($"   WHERE p.IdUser = {Param(x => x.IdUser)} ");
+        Add("     FROM core.prm_profiles p");
+        Add("    INNER JOIN core.prm_permissions pm On pm.id = p.idpermission ");
+        Add($"   WHERE p.iduser = {Param(x => x.IdUser)} ");
     }
 }

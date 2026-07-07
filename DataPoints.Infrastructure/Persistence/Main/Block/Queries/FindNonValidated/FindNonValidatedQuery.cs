@@ -8,11 +8,11 @@ public class FindNonValidatedQuery(FindNonValidatedFilter filter) : CustomQuery<
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Blc_Block blc ");
+        Add("     FROM core.blc_block blc ");
         Add("    where not exists(select 1 ");
-        Add("                       from Btc_Checkpoints btc");
-        Add($"                     where IdBatch = {Param(x => x.ValidationId)} ");
-        Add($"                       and IdBlock = blc.Id)");
-        Add($"     and IsValid = {Param(x => x.IsValid)} ");
+        Add("                       from core.btc_checkpoints btc");
+        Add($"                     where idbatch = {Param(x => x.ValidationId)} ");
+        Add($"                       and idblock = blc.id)");
+        Add($"     and isvalid = {Param(x => x.IsValid)} ");
     }
 }

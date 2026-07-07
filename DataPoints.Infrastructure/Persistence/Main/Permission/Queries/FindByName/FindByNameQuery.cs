@@ -8,7 +8,7 @@ public class FindByNameQuery(FindByNameFilter filter) : CustomQuery<FindByNameFi
     protected override void Prepare()
     {
         Add("   SELECT * ");
-        Add("     FROM Prm_Permissions ");
-        Add($"   WHERE Name = {Param(x => x.Role)}  ");
+        Add("     FROM core.prm_permissions ");
+        Add($"   WHERE name = {Param(x => x.Role)}  ");
     }
 }

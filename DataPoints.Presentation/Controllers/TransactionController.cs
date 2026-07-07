@@ -23,10 +23,13 @@ public class TransactionController : ApiController
     [Protected(RoleProfile.User)]
     [HttpPost]
     public async Task<ActionResult<TransactionInsertResponse>> InsertNewTransactionAsync(
-        [FromBody] TransactionInsertRequest request, [FromHeader(Name = "X-Signature")] string signature)
+        [FromBody] TransactionInsertRequest request,
+        [FromHeader(Name = "X-Signature")] string signature,
+        [FromHeader(Name = "Idempotency-Key")] Guid idempotencyKey)
     {
         var transaction =
-            await Sender.Send(new TransactionInsertCommand(request.ReceiverWallet, signature, request.Amount, LoggedPerson));
+            await Sender.Send(new TransactionInsertCommand(request.ReceiverWallet, signature, request.Amount,
+                idempotencyKey, request.IssuedAtUtc, LoggedPerson));
 
         return Created($"api/transactions/{transaction.Id}", transaction);
     }
